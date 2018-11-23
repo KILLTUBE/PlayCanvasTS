@@ -3,7 +3,7 @@
  * @namespace
  * @description Math API
  */
-pc.math = {
+namespace pc.math {
     /**
      * @name pc.math.DEG_TO_RAD
      * @description Conversion factor between degrees and radians
@@ -12,7 +12,7 @@ pc.math = {
      * // Convert 180 degrees to pi radians
      * var rad = 180 * pc.math.DEG_TO_RAD;
      */
-    DEG_TO_RAD: Math.PI / 180,
+    export const DEG_TO_RAD = Math.PI / 180;
 
     /**
      * @name pc.math.RAD_TO_DEG
@@ -22,7 +22,7 @@ pc.math = {
      * // Convert pi radians to 180 degrees
      * var deg = Math.PI * pc.math.RAD_TO_DEG;
      */
-    RAD_TO_DEG: 180 / Math.PI,
+    export const RAD_TO_DEG = 180 / Math.PI;
 
     /**
      * @function
@@ -33,11 +33,11 @@ pc.math = {
      * @param {Number} max Max value
      * @returns {Number} The clamped value
      */
-    clamp: function (value, min, max) {
+    export function clamp(value: number, min: number, max: number) {
         if (value >= max) return max;
         if (value <= min) return min;
         return value;
-    },
+    }
 
     /**
      * @function
@@ -49,7 +49,7 @@ pc.math = {
      * // Set bytes to [0x11, 0x22, 0x33]
      * var bytes = pc.math.intToBytes24(0x112233);
      */
-    intToBytes24: function (i) {
+    export function intToBytes24(i: number) {
         var r, g, b;
 
         r = (i >> 16) & 0xff;
@@ -57,7 +57,7 @@ pc.math = {
         b = (i) & 0xff;
 
         return [r, g, b];
-    },
+    }
 
     /**
      * @function
@@ -69,7 +69,7 @@ pc.math = {
      * // Set bytes to [0x11, 0x22, 0x33, 0x44]
      * var bytes = pc.math.intToBytes32(0x11223344);
      */
-    intToBytes32: function (i) {
+    export function intToBytes32(i: number) {
         var r, g, b, a;
 
         r = (i >> 24) & 0xff;
@@ -78,7 +78,7 @@ pc.math = {
         a = (i) & 0xff;
 
         return [r, g, b, a];
-    },
+    }
 
     /**
      * @function
@@ -95,14 +95,14 @@ pc.math = {
      * @param {Number} b A single byte (0-255)
      * @returns {Number} A single unsigned 24 bit Number.
      */
-    bytesToInt24: function (r, g, b) {
+    export function bytesToInt24(r: any, g: number, b: number) {
         if (r.length) {
             b = r[2];
             g = r[1];
             r = r[0];
         }
         return ((r << 16) | (g << 8) | b);
-    },
+    }
 
     /**
      * @function
@@ -120,7 +120,7 @@ pc.math = {
      * @param {Number} b A single byte (0-255)
      * @param {Number} a A single byte (0-255)
      */
-    bytesToInt32: function (r, g, b, a) {
+    export function bytesToInt32(r: any, g?: number, b?: number, a?: number) {
         if (r.length) {
             a = r[3];
             b = r[2];
@@ -132,7 +132,7 @@ pc.math = {
         // >>> used unsigned so >>>32 converts back to an unsigned.
         // See http://stackoverflow.com/questions/1908492/unsigned-integer-in-javascript
         return ((r << 24) | (g << 16) | (b << 8) | a) >>> 32;
-    },
+    }
 
     /**
      * @function
@@ -145,9 +145,9 @@ pc.math = {
      * a is returned. When alpha is 1, b is returned. Between 0 and 1, a linear interpolation between
      * a and b is returned. alpha is clamped between 0 and 1.
      */
-    lerp: function (a, b, alpha) {
+    export function lerp(a: number, b: number, alpha: number) {
         return a + (b - a) * pc.math.clamp(alpha, 0, 1);
-    },
+    }
 
     /**
      * @function
@@ -161,7 +161,7 @@ pc.math = {
      * a is returned. When alpha is 1, b is returned. Between 0 and 1, a linear interpolation between
      * a and b is returned. alpha is clamped between 0 and 1.
      */
-    lerpAngle: function (a, b, alpha) {
+    export function lerpAngle(a: number, b: number, alpha: number) {
         if (b - a > 180 ) {
             b -= 360;
         }
@@ -169,7 +169,7 @@ pc.math = {
             b += 360;
         }
         return pc.math.lerp(a, b, pc.math.clamp(alpha, 0, 1));
-    },
+    }
 
     /**
      * @function
@@ -178,9 +178,9 @@ pc.math = {
      * @param {Number} x Number to check for power-of-two property.
      * @returns {Boolean} true if power-of-two and false otherwise.
      */
-    powerOfTwo: function (x) {
+    export function powerOfTwo(x: number) {
         return ((x !== 0) && !(x & (x - 1)));
-    },
+    }
 
     /**
      * @function
@@ -189,7 +189,7 @@ pc.math = {
      * @param {Number} val The value for which to calculate the next power of 2.
      * @returns {Number} The next power of 2.
      */
-    nextPowerOfTwo: function (val) {
+    export function nextPowerOfTwo(val: number) {
         val--;
         val |= (val >> 1);
         val |= (val >> 2);
@@ -198,7 +198,7 @@ pc.math = {
         val |= (val >> 16);
         val++;
         return val;
-    },
+    }
 
     /**
      * @function
@@ -209,10 +209,10 @@ pc.math = {
      * @param {Number} max Upper bound for range.
      * @returns {Number} Pseudo-random number between the supplied range.
      */
-    random: function (min, max) {
+    export function random(min: number, max: number) {
         var diff = max - min;
         return Math.random() * diff + min;
-    },
+    }
 
     /**
      * @function
@@ -229,14 +229,14 @@ pc.math = {
      * @param {Number} x The value to interpolate.
      * @returns {Number} The smoothly interpolated value clamped between zero and one.
      */
-    smoothstep: function (min, max, x) {
+    export function smoothstep(min: number, max: number, x: number) {
         if (x <= min) return 0;
         if (x >= max) return 1;
 
         x = (x - min) / (max - min);
 
         return x * x * (3 - 2 * x);
-    },
+    }
 
     /**
      * @function
@@ -249,7 +249,7 @@ pc.math = {
      * @param {Number} x The value to interpolate.
      * @returns {Number} The smoothly interpolated value clamped between zero and one.
      */
-    smootherstep: function (min, max, x) {
+    export function smootherstep(min: number, max: number, x: number) {
         if (x <= min) return 0;
         if (x >= max) return 1;
 
@@ -257,4 +257,4 @@ pc.math = {
 
         return x * x * x * (x * (x * 6 - 15) + 10);
     }
-};
+}
