@@ -1,4 +1,4 @@
-Object.assign(pc, (function () {
+namespace pc {
     'use strict';
 
     /**
@@ -9,35 +9,38 @@ Object.assign(pc, (function () {
      * @param {Array} [curveKeys] An array of arrays of keys (pairs of numbers with
      * the time first and value second).
      */
-    var CurveSet = function () {
-        var i;
+    export class CurveSet {
+        curves: Curve[];
+        _type: number; // enum
 
-        this.curves = [];
-        this._type = pc.CURVE_SMOOTHSTEP;
+        constructor() {
+            var i;
 
-        if (arguments.length > 1) {
-            for (i = 0; i < arguments.length; i++) {
-                this.curves.push(new pc.Curve(arguments[i]));
-            }
-        } else {
-            if (arguments.length === 0) {
-                this.curves.push(new pc.Curve());
+            this.curves = [];
+            this._type = pc.CURVE_SMOOTHSTEP;
+
+            if (arguments.length > 1) {
+                for (i = 0; i < arguments.length; i++) {
+                    this.curves.push(new pc.Curve(arguments[i]));
+                }
             } else {
-                var arg = arguments[0];
-                if (pc.type(arg) === 'number') {
-                    for (i = 0; i < arg; i++) {
-                        this.curves.push(new pc.Curve());
-                    }
+                if (arguments.length === 0) {
+                    this.curves.push(new pc.Curve());
                 } else {
-                    for (i = 0; i < arg.length; i++) {
-                        this.curves.push(new pc.Curve(arg[i]));
+                    var arg = arguments[0];
+                    if (pc.type(arg) === 'number') {
+                        for (i = 0; i < arg; i++) {
+                            this.curves.push(new pc.Curve());
+                        }
+                    } else {
+                        for (i = 0; i < arg.length; i++) {
+                            this.curves.push(new pc.Curve(arg[i]));
+                        }
                     }
                 }
             }
         }
-    };
 
-    Object.assign(CurveSet.prototype, {
         /**
          * @function
          * @name pc.CurveSet#get
@@ -45,9 +48,9 @@ Object.assign(pc, (function () {
          * @param {Number} index The index of the curve to return
          * @returns {pc.Curve} The curve at the specified index
          */
-        get: function (index) {
+        get(index: number) {
             return this.curves[index];
-        },
+        }
 
         /**
          * @function
@@ -60,7 +63,7 @@ Object.assign(pc, (function () {
          * to return the result.
          * @returns {Array} The interpolated curve values at the specified time
          */
-        value: function (time, result) {
+        value(time: number, result?: number[]) {
             var length = this.curves.length;
             result = result || [];
             result.length = length;
@@ -70,7 +73,7 @@ Object.assign(pc, (function () {
             }
 
             return result;
-        },
+        }
 
         /**
          * @function
@@ -78,7 +81,7 @@ Object.assign(pc, (function () {
          * @description Returns a clone of the specified curve set object.
          * @returns {pc.CurveSet} A clone of the specified curve set
          */
-        clone: function () {
+        clone() {
             var result = new pc.CurveSet();
 
             result.curves = [];
@@ -89,15 +92,15 @@ Object.assign(pc, (function () {
             result._type = this._type;
 
             return result;
-        },
+        }
 
-        quantize: function (precision) {
+        quantize(precision: number) {
             precision = Math.max(precision, 2);
 
             var numCurves = this.curves.length;
             var values = new Float32Array(precision * numCurves);
             var step = 1.0 / (precision - 1);
-            var temp = [];
+            var temp: number[] = [];
 
             for (var i = 0; i < precision; i++) { // quantize graph to table of interpolated values
                 var value = this.value(step * i, temp);
@@ -112,7 +115,7 @@ Object.assign(pc, (function () {
 
             return values;
         }
-    });
+    }
 
     /**
      * @readonly
@@ -149,8 +152,4 @@ Object.assign(pc, (function () {
             }
         }
     });
-
-    return {
-        CurveSet: CurveSet
-    };
-}()));
+}
