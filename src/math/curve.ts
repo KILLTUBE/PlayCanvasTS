@@ -1,4 +1,4 @@
-Object.assign(pc, (function () {
+namespace pc {
     'use strict';
 
     /**
@@ -6,25 +6,25 @@ Object.assign(pc, (function () {
      * @name pc.CURVE_LINEAR
      * @description A linear interpolation scheme.
      */
-    var CURVE_LINEAR = 0;
+    export const CURVE_LINEAR = 0;
     /**
      * @enum pc.CURVE
      * @name pc.CURVE_SMOOTHSTEP
      * @description A smooth step interpolation scheme.
      */
-    var CURVE_SMOOTHSTEP = 1;
+    export const CURVE_SMOOTHSTEP = 1;
     /**
      * @enum pc.CURVE
      * @name pc.CURVE_CATMULL
      * @description A Catmull-Rom spline interpolation scheme.
      */
-    var CURVE_CATMULL = 2;
+    export const CURVE_CATMULL = 2;
     /**
      * @enum pc.CURVE
      * @name pc.CURVE_CARDINAL
      * @description A cardinal spline interpolation scheme.
      */
-    var CURVE_CARDINAL = 3;
+    export const CURVE_CARDINAL = 3;
 
     /**
      * @constructor
@@ -36,22 +36,26 @@ Object.assign(pc, (function () {
      * value second)
      * @property {Number} length The number of keys in the curve. [read only]
      */
-    var Curve = function (data) {
-        this.keys = [];
-        this.type = CURVE_SMOOTHSTEP;
+    export class Curve {
+        keys: number[][];
+        type: number; // actual type is enum
+        tension: number;
 
-        this.tension = 0.5; // used for CURVE_CARDINAL
+        constructor(data?: number[]) {
+            this.keys = [];
+            this.type = CURVE_SMOOTHSTEP;
 
-        if (data) {
-            for (var i = 0; i < data.length - 1; i += 2) {
-                this.keys.push([data[i], data[i + 1]]);
+            this.tension = 0.5; // used for CURVE_CARDINAL
+
+            if (data) {
+                for (var i = 0; i < data.length - 1; i += 2) {
+                    this.keys.push([data[i], data[i + 1]]);
+                }
             }
+
+            this.sort();
         }
-
-        this.sort();
-    };
-
-    Object.assign(Curve.prototype, {
+    
         /**
          * @function
          * @name pc.Curve#add
@@ -60,7 +64,7 @@ Object.assign(pc, (function () {
          * @param {Number} value Value of new key
          * @returns {Number[]} [time, value] pair
          */
-        add: function (time, value) {
+        add(time: number, value: number) {
             var keys = this.keys;
             var len = keys.length;
             var i = 0;
@@ -74,7 +78,7 @@ Object.assign(pc, (function () {
             var key = [time, value];
             this.keys.splice(i, 0, key);
             return key;
-        },
+        }
 
         /**
          * @function
@@ -83,20 +87,20 @@ Object.assign(pc, (function () {
          * @param {Number} index The index of the key to return
          * @returns {Number[]} The key at the specified index
          */
-        get: function (index) {
+        get(index: number) {
             return this.keys[index];
-        },
+        }
 
         /**
          * @function
          * @name pc.Curve#sort
          * @description Sort keys by time.
          */
-        sort: function () {
-            this.keys.sort(function (a, b) {
+        sort() {
+            this.keys.sort(function (a: number[], b: number[]) {
                 return a[0] - b[0];
             });
-        },
+        }
 
         /**
          * @function
@@ -105,7 +109,7 @@ Object.assign(pc, (function () {
          * @param {Number} time The time at which to calculate the value
          * @returns {Number} The interpolated value
          */
-        value: function (time) {
+        value(time: number) {
             var i, len;
             var keys = this.keys;
 
@@ -190,9 +194,9 @@ Object.assign(pc, (function () {
             }
 
             return pc.math.lerp(leftValue, rightValue, interpolation);
-        },
+        }
 
-        _interpolateHermite: function (p0, p1, t0, t1, s) {
+        _interpolateHermite(p0: number, p1: number, t0: number, t1: number, s: number) {
             var s2 = s * s;
             var s3 = s * s * s;
             var h0 = 2 * s3 - 3 * s2 + 1;
@@ -201,20 +205,20 @@ Object.assign(pc, (function () {
             var h3 = s3 - s2;
 
             return p0 * h0 + p1 * h1 + t0 * h2 + t1 * h3;
-        },
+        }
 
-        _interpolateCardinal: function (p0, p1, p2, p3, s, t) {
+        _interpolateCardinal(p0: number, p1: number, p2: number, p3: number, s: number, t: number) {
             var t0 = t * (p2 - p0);
             var t1 = t * (p3 - p1);
 
             return this._interpolateHermite(p1, p2, t0, t1, s);
-        },
+        }
 
-        _interpolateCatmullRom: function (p0, p1, p2, p3, s) {
+        _interpolateCatmullRom(p0: number, p1: number, p2: number, p3: number, s: number) {
             return this._interpolateCardinal(p0, p1, p2, p3, s, 0.5);
-        },
+        }
 
-        closest: function (time) {
+        closest(time: number) {
             var keys = this.keys;
             var length = keys.length;
             var min = 2;
@@ -231,7 +235,7 @@ Object.assign(pc, (function () {
             }
 
             return result;
-        },
+        }
 
         /**
          * @function
@@ -239,14 +243,14 @@ Object.assign(pc, (function () {
          * @description Returns a clone of the specified curve object.
          * @returns {pc.Curve} A clone of the specified curve
          */
-        clone: function () {
+        clone() {
             var result = new pc.Curve();
             result.keys = pc.extend(result.keys, this.keys);
             result.type = this.type;
             return result;
-        },
+        }
 
-        quantize: function (precision) {
+        quantize(precision: number) {
             precision = Math.max(precision, 2);
 
             var values = new Float32Array(precision);
@@ -260,19 +264,11 @@ Object.assign(pc, (function () {
 
             return values;
         }
-    });
+    }
 
     Object.defineProperty(Curve.prototype, 'length', {
         get: function () {
             return this.keys.length;
         }
     });
-
-    return {
-        Curve: Curve,
-        CURVE_LINEAR: CURVE_LINEAR,
-        CURVE_SMOOTHSTEP: CURVE_SMOOTHSTEP,
-        CURVE_CATMULL: CURVE_CATMULL,
-        CURVE_CARDINAL: CURVE_CARDINAL
-    };
-}()));
+}
