@@ -615,4 +615,19 @@ namespace pc {
             };
         }())
     });
+
+    export class PreallocatedVec3 {
+        // for user code
+        public static a: Vec3 = new Vec3;
+        public static b: Vec3 = new Vec3;
+        public static c: Vec3 = new Vec3;
+        // each function its own, so they don't collide
+        public static setLookAt_x: Vec3 = new Vec3;
+        public static setLookAt_y: Vec3 = new Vec3;
+        public static setLookAt_z: Vec3 = new Vec3;
+        public static getScale_x: Vec3 = new Vec3;
+        public static getScale_y: Vec3 = new Vec3;
+        public static getScale_z: Vec3 = new Vec3;
+        public static getEulerAngles_scale: Vec3 = new Vec3;
+    }    
 }

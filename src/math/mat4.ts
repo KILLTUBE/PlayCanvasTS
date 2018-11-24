@@ -417,39 +417,37 @@ namespace pc {
          * var up = new pc.Vec3(0, 1, 0);
          * var m = new pc.Mat4().setLookAt(position, target, up);
          */
-        setLookAt = (function () {
-            var x = new pc.Vec3();
-            var y = new pc.Vec3();
-            var z = new pc.Vec3();
+        setLookAt(position: Vec3, target: Vec3, up: Vec3) {
+            var x = PreallocatedVec3.setLookAt_x;
+            var y = PreallocatedVec3.setLookAt_y;
+            var z = PreallocatedVec3.setLookAt_z;
 
-            return function (position: Vec3, target: Vec3, up: Vec3) {
-                z.sub2(position, target).normalize();
-                y.copy(up).normalize();
-                x.cross(y, z).normalize();
-                y.cross(z, x);
+            z.sub2(position, target).normalize();
+            y.copy(up).normalize();
+            x.cross(y, z).normalize();
+            y.cross(z, x);
 
-                var r = this.data;
+            var r = this.data;
 
-                r[0]  = x.x;
-                r[1]  = x.y;
-                r[2]  = x.z;
-                r[3]  = 0;
-                r[4]  = y.x;
-                r[5]  = y.y;
-                r[6]  = y.z;
-                r[7]  = 0;
-                r[8]  = z.x;
-                r[9]  = z.y;
-                r[10] = z.z;
-                r[11] = 0;
-                r[12] = position.x;
-                r[13] = position.y;
-                r[14] = position.z;
-                r[15] = 1;
+            r[0]  = x.x;
+            r[1]  = x.y;
+            r[2]  = x.z;
+            r[3]  = 0;
+            r[4]  = y.x;
+            r[5]  = y.y;
+            r[6]  = y.z;
+            r[7]  = 0;
+            r[8]  = z.x;
+            r[9]  = z.y;
+            r[10] = z.z;
+            r[11] = 0;
+            r[12] = position.x;
+            r[13] = position.y;
+            r[14] = position.z;
+            r[15] = 1;
 
-                return this;
-            };
-        }())
+            return this;
+        }
 
         /**
          * @private
@@ -1083,22 +1081,20 @@ namespace pc {
          * // Query the scale component
          * var scale = m.getScale();
          */
-        getScale = (function () {
-            var x = new pc.Vec3();
-            var y = new pc.Vec3();
-            var z = new pc.Vec3();
+        getScale(scale?: Vec3) {
+            var x = PreallocatedVec3.getScale_x;
+            var y = PreallocatedVec3.getScale_y;
+            var z = PreallocatedVec3.getScale_z;
 
-            return function (scale?: Vec3) {
-                scale = (scale === undefined) ? new pc.Vec3() : scale;
+            scale = (scale === undefined) ? new pc.Vec3() : scale;
 
-                this.getX(x);
-                this.getY(y);
-                this.getZ(z);
-                scale.set(x.length(), y.length(), z.length());
+            this.getX(x);
+            this.getY(y);
+            this.getZ(z);
+            scale.set(x.length(), y.length(), z.length());
 
-                return scale;
-            };
-        }())
+            return scale;
+        }
 
         /**
          * @function
@@ -1170,42 +1166,39 @@ namespace pc {
          *
          * var eulers = m.getEulerAngles();
          */
-        getEulerAngles = (function () {
-            var scale = new pc.Vec3();
+        getEulerAngles(eulers?: Vec3) {
+            var x, y, z, sx, sy, sz, m, halfPi, scale;
 
-            return function (eulers?: Vec3) {
-                var x, y, z, sx, sy, sz, m, halfPi;
+            scale = PreallocatedVec3.getEulerAngles_scale;
+            eulers = (eulers === undefined) ? new pc.Vec3() : eulers;
 
-                eulers = (eulers === undefined) ? new pc.Vec3() : eulers;
+            this.getScale(scale);
+            sx = scale.x;
+            sy = scale.y;
+            sz = scale.z;
 
-                this.getScale(scale);
-                sx = scale.x;
-                sy = scale.y;
-                sz = scale.z;
+            m = this.data;
 
-                m = this.data;
+            y = Math.asin(-m[2] / sx);
+            halfPi = Math.PI * 0.5;
 
-                y = Math.asin(-m[2] / sx);
-                halfPi = Math.PI * 0.5;
-
-                if (y < halfPi) {
-                    if (y > -halfPi) {
-                        x = Math.atan2(m[6] / sy, m[10] / sz);
-                        z = Math.atan2(m[1] / sx, m[0] / sx);
-                    } else {
-                        // Not a unique solution
-                        z = 0;
-                        x = -Math.atan2(m[4] / sy, m[5] / sy);
-                    }
+            if (y < halfPi) {
+                if (y > -halfPi) {
+                    x = Math.atan2(m[6] / sy, m[10] / sz);
+                    z = Math.atan2(m[1] / sx, m[0] / sx);
                 } else {
                     // Not a unique solution
                     z = 0;
-                    x = Math.atan2(m[4] / sy, m[5] / sy);
+                    x = -Math.atan2(m[4] / sy, m[5] / sy);
                 }
+            } else {
+                // Not a unique solution
+                z = 0;
+                x = Math.atan2(m[4] / sy, m[5] / sy);
+            }
 
-                return eulers.set(x, y, z).scale(pc.math.RAD_TO_DEG);
-            };
-        }())
+            return eulers.set(x, y, z).scale(pc.math.RAD_TO_DEG);
+        }
 
         /**
          * @function
