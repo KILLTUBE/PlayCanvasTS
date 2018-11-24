@@ -4,8 +4,8 @@
  * @name _typeLookup
  * @description Create look up table for types
  */
-var _typeLookup = function () {
-    var result = { };
+var _typeLookup: any = function () {
+    var result: any = { };
     var names = ["Array", "Object", "Function", "Date", "RegExp", "Float32Array"];
 
     for (var i = 0; i < names.length; i++)
@@ -31,13 +31,13 @@ var _typeLookup = function () {
 // #endif
  */
 /* eslint-enable multiline-comment-style */
-var pc = {
-    version: "__CURRENT_SDK_VERSION__",
-    revision: "__REVISION__",
-    config: { },
-    common: { },
-    apps: { }, // Storage for the applications using the PlayCanvas Engine
-    data: { }, // Storage for exported entity data
+namespace pc {
+    export var version = "__CURRENT_SDK_VERSION__";
+    export var revision = "__REVISION__";
+    export var config = { };
+    export var common = { };
+    export var apps = { }; // Storage for the applications using the PlayCanvas Engine
+    export var data = { }; // Storage for exported entity data
 
     /**
      * @private
@@ -45,9 +45,9 @@ var pc = {
      * @name pc.unpack
      * @description Copy a set of common PlayCanvas functions/classes/namespaces into the global namespace
      */
-    unpack: function () {
+    export function unpack() {
         console.warn("pc.unpack has been deprecated and will be removed shortly. Please update your code.");
-    },
+    }
 
     /**
      * @private
@@ -58,7 +58,7 @@ var pc = {
      * @param {Object} arr The array to convert
      * @returns {Array} An array
      */
-    makeArray: function (arr) {
+    export function makeArray(arr: any) {
         var i,
             ret = [],
             length = arr.length;
@@ -68,7 +68,7 @@ var pc = {
         }
 
         return ret;
-    },
+    }
 
     /**
      * @private
@@ -78,7 +78,7 @@ var pc = {
      * @param {Object} obj The object to get the type of
      * @returns {String} The type string: "null", "undefined", "number", "string", "boolean", "array", "object", "function", "date", "regexp" or "float32array"
      */
-    type: function (obj) {
+    export function type(obj: any) {
         if (obj === null) {
             return "null";
         }
@@ -90,7 +90,7 @@ var pc = {
         }
 
         return _typeLookup[Object.prototype.toString.call(obj)];
-    },
+    }
 
     /**
      * @private
@@ -110,7 +110,7 @@ var pc = {
      * A.b();
      * // logs "b"
      */
-    extend: function (target, ex) {
+    export function extend(target: any, ex: any) {
         var prop,
             copy;
 
@@ -126,7 +126,7 @@ var pc = {
         }
 
         return target;
-    },
+    }
 
 
     /**
@@ -137,11 +137,8 @@ var pc = {
      * @param {Object} o The Object to test
      * @returns {Boolean} True if the Object is not undefined
      */
-    isDefined: function (o) {
+    export function isDefined(o: any) {
         var a;
         return (o !== a);
     }
-};
-
-if (typeof exports !== 'undefined')
-    exports.pc = pc;
+}
