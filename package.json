@@ -63,6 +63,7 @@
     "node": ">= 0.6.12"
   },
   "dependencies": {
+    "@types/node": "^10.12.12",
     "typescript": "^3.1.6"
   }
 }
