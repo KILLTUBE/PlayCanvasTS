@@ -1,4 +1,4 @@
-Object.assign(pc, (function () {
+namespace pc {
     /**
      * @constructor
      * @name pc.Color
@@ -13,31 +13,36 @@ Object.assign(pc, (function () {
      * @property {Number} b The blue component of the color
      * @property {Number} a The alpha component of the color
      */
-    var Color = function (r, g, b, a) {
-        var length = r && r.length;
-        if (length === 3 || length === 4) {
-            this.r = r[0];
-            this.g = r[1];
-            this.b = r[2];
-            this.a = r[3] !== undefined ? r[3] : 1;
-        } else {
-            this.r = r || 0;
-            this.g = g || 0;
-            this.b = b || 0;
-            this.a = a !== undefined ? a : 1;
-        }
-    };
+    export class Color {
+        r: number;
+        g: number;
+        b: number;
+        a: number;
 
-    Object.assign(Color.prototype, {
+        constructor(r: any, g?: number, b?: number, a?: number) {
+            var length = r && r.length;
+            if (length === 3 || length === 4) {
+                this.r = r[0];
+                this.g = r[1];
+                this.b = r[2];
+                this.a = r[3] !== undefined ? r[3] : 1;
+            } else {
+                this.r = r || 0;
+                this.g = g || 0;
+                this.b = b || 0;
+                this.a = a !== undefined ? a : 1;
+            }
+        }
+
         /**
          * @function
          * @name pc.Color#clone
          * @description Returns a clone of the specified color.
          * @returns {pc.Color} A duplicate color object
          */
-        clone: function () {
+        clone() {
             return new pc.Color(this.r, this.g, this.b, this.a);
-        },
+        }
 
         /**
          * @function
@@ -53,14 +58,14 @@ Object.assign(pc, (function () {
          *
          * console.log("The two colors are " + (dst.equals(src) ? "equal" : "different"));
          */
-        copy: function (rhs) {
+        copy(rhs: Color) {
             this.r = rhs.r;
             this.g = rhs.g;
             this.b = rhs.b;
             this.a = rhs.a;
 
             return this;
-        },
+        }
 
         /**
          * @function
@@ -72,14 +77,14 @@ Object.assign(pc, (function () {
          * @param {Number} [a] The value for the alpha (0-1), defaults to 1
          * @returns {pc.Color} Self for chaining
          */
-        set: function (r, g, b, a) {
+        set(r: number, g: number, b: number, a: number) {
             this.r = r;
             this.g = g;
             this.b = b;
             this.a = (a === undefined) ? 1 : a;
 
             return this;
-        },
+        }
 
         /**
          * @function
@@ -89,7 +94,7 @@ Object.assign(pc, (function () {
          * This is the same format used in HTML/CSS.
          * @returns {pc.Color} Self for chaining
          */
-        fromString: function (hex) {
+        fromString(hex: string) {
             var i = parseInt(hex.replace('#', '0x'), 16);
             var bytes;
             if (hex.length > 7) {
@@ -102,7 +107,7 @@ Object.assign(pc, (function () {
             this.set(bytes[0] / 255, bytes[1] / 255, bytes[2] / 255, bytes[3] / 255);
 
             return this;
-        },
+        }
 
         /**
          * @function
@@ -117,7 +122,7 @@ Object.assign(pc, (function () {
          * // Should output '#ffffffff'
          * console.log(c.toString());
          */
-        toString: function (alpha) {
+        toString(alpha: boolean) {
             var s = "#" + ((1 << 24) + (Math.round(this.r * 255) << 16) + (Math.round(this.g * 255) << 8) + Math.round(this.b * 255)).toString(16).slice(1);
             if (alpha === true) {
                 var a = Math.round(this.a * 255).toString(16);
@@ -131,9 +136,5 @@ Object.assign(pc, (function () {
 
             return s;
         }
-    });
-
-    return {
-        Color: Color
-    };
-}()));
+    }
+}
