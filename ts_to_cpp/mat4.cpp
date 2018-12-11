@@ -8,14 +8,14 @@ namespace pc {
      * @description Creates a new identity Mat4 object.
      */
     /*export*/ class Mat4 {
-        data: Float32Array;
+        Float32Array data;
 
         constructor() {
-            var data = new Float32Array(16);
+            auto data = new Float32Array(16);
             // Create an identity matrix. Note that a new Float32Array has all elements set
             // to zero by default, so we only need to set the relevant elements to one.
             data[0] = data[5] = data[10] = data[15] = 1;
-            this.data = data;
+            this->data = data;
         }
 
         /**
@@ -27,16 +27,16 @@ namespace pc {
          * @param {pc.Mat4} rhs The 4x4 matrix used as the second operand of the addition.
          * @returns {pc.Mat4} Self for chaining.
          * @example
-         * var m = new pc.Mat4();
+         * auto m = new pc.Mat4();
          *
          * m.add2(pc.Mat4.IDENTITY, pc.Mat4.ONE);
          *
          * console.log("The result of the addition is: " a.toString());
          */
-        add2(lhs: Mat4, rhs: Mat4) {
-            var a = lhs.data,
+        add2(Mat4 lhs, Mat4 rhs) {
+            auto a = lhs.data,
                 b = rhs.data,
-                r = this.data;
+                r = this->data;
 
             r[0] = a[0] + b[0];
             r[1] = a[1] + b[1];
@@ -65,14 +65,14 @@ namespace pc {
          * @param {pc.Mat4} rhs The 4x4 matrix used as the second operand of the addition.
          * @returns {pc.Mat4} Self for chaining.
          * @example
-         * var m = new pc.Mat4();
+         * auto m = new pc.Mat4();
          *
          * m.add(pc.Mat4.ONE);
          *
          * console.log("The result of the addition is: " a.toString());
          */
-        add(rhs: Mat4) {
-            return this.add2(this, rhs);
+        add(Mat4 rhs) {
+            return this->add2(this, rhs);
         }
 
         /**
@@ -81,8 +81,8 @@ namespace pc {
          * @description Creates a duplicate of the specified matrix.
          * @returns {pc.Mat4} A duplicate matrix.
          * @example
-         * var src = new pc.Mat4().setFromEulerAngles(10, 20, 30);
-         * var dst = src.clone();
+         * auto src = new pc.Mat4().setFromEulerAngles(10, 20, 30);
+         * auto dst = src.clone();
          * console.log("The two matrices are " + (src.equals(dst) ? "equal" : "different"));
          */
         clone() {
@@ -96,14 +96,14 @@ namespace pc {
          * @param {pc.Mat4} rhs A 4x4 matrix to be copied.
          * @returns {pc.Mat4} Self for chaining.
          * @example
-         * var src = new pc.Mat4().setFromEulerAngles(10, 20, 30);
-         * var dst = new pc.Mat4();
+         * auto src = new pc.Mat4().setFromEulerAngles(10, 20, 30);
+         * auto dst = new pc.Mat4();
          * dst.copy(src);
          * console.log("The two matrices are " + (src.equals(dst) ? "equal" : "different"));
          */
-        copy(rhs: Mat4) {
-            var src = rhs.data,
-                dst = this.data;
+        copy(Mat4 rhs) {
+            auto src = rhs.data,
+                dst = this->data;
 
             dst[0] = src[0];
             dst[1] = src[1];
@@ -132,30 +132,30 @@ namespace pc {
          * @param {pc.Mat4} rhs The other matrix.
          * @returns {Boolean} true if the matrices are equal and false otherwise.
          * @example
-         * var a = new pc.Mat4().setFromEulerAngles(10, 20, 30);
-         * var b = new pc.Mat4();
+         * auto a = new pc.Mat4().setFromEulerAngles(10, 20, 30);
+         * auto b = new pc.Mat4();
          * console.log("The two matrices are " + (a.equals(b) ? "equal" : "different"));
          */
-        equals(rhs: Mat4) {
-            var l = this.data,
+        equals(Mat4 rhs) {
+            auto l = this->data,
                 r = rhs.data;
 
-            return ((l[0] === r[0]) &&
-                    (l[1] === r[1]) &&
-                    (l[2] === r[2]) &&
-                    (l[3] === r[3]) &&
-                    (l[4] === r[4]) &&
-                    (l[5] === r[5]) &&
-                    (l[6] === r[6]) &&
-                    (l[7] === r[7]) &&
-                    (l[8] === r[8]) &&
-                    (l[9] === r[9]) &&
-                    (l[10] === r[10]) &&
-                    (l[11] === r[11]) &&
-                    (l[12] === r[12]) &&
-                    (l[13] === r[13]) &&
-                    (l[14] === r[14]) &&
-                    (l[15] === r[15]));
+            return ((l[0] == r[0]) &&
+                    (l[1] == r[1]) &&
+                    (l[2] == r[2]) &&
+                    (l[3] == r[3]) &&
+                    (l[4] == r[4]) &&
+                    (l[5] == r[5]) &&
+                    (l[6] == r[6]) &&
+                    (l[7] == r[7]) &&
+                    (l[8] == r[8]) &&
+                    (l[9] == r[9]) &&
+                    (l[10] == r[10]) &&
+                    (l[11] == r[11]) &&
+                    (l[12] == r[12]) &&
+                    (l[13] == r[13]) &&
+                    (l[14] == r[14]) &&
+                    (l[15] == r[15]));
         }
 
         /**
@@ -164,28 +164,28 @@ namespace pc {
          * @description Reports whether the specified matrix is the identity matrix.
          * @returns {Boolean} true if the matrix is identity and false otherwise.
          * @example
-         * var m = new pc.Mat4();
+         * auto m = new pc.Mat4();
          * console.log("The matrix is " + (m.isIdentity() ? "identity" : "not identity"));
          */
         isIdentity() {
-            var m = this.data;
+            auto m = this->data;
 
-            return ((m[0] === 1) &&
-                    (m[1] === 0) &&
-                    (m[2] === 0) &&
-                    (m[3] === 0) &&
-                    (m[4] === 0) &&
-                    (m[5] === 1) &&
-                    (m[6] === 0) &&
-                    (m[7] === 0) &&
-                    (m[8] === 0) &&
-                    (m[9] === 0) &&
-                    (m[10] === 1) &&
-                    (m[11] === 0) &&
-                    (m[12] === 0) &&
-                    (m[13] === 0) &&
-                    (m[14] === 0) &&
-                    (m[15] === 1));
+            return ((m[0] == 1) &&
+                    (m[1] == 0) &&
+                    (m[2] == 0) &&
+                    (m[3] == 0) &&
+                    (m[4] == 0) &&
+                    (m[5] == 1) &&
+                    (m[6] == 0) &&
+                    (m[7] == 0) &&
+                    (m[8] == 0) &&
+                    (m[9] == 0) &&
+                    (m[10] == 1) &&
+                    (m[11] == 0) &&
+                    (m[12] == 0) &&
+                    (m[13] == 0) &&
+                    (m[14] == 0) &&
+                    (m[15] == 1));
         }
 
         /**
@@ -197,24 +197,24 @@ namespace pc {
          * @param {pc.Mat4} rhs The 4x4 matrix used as the second multiplicand of the operation.
          * @returns {pc.Mat4} Self for chaining.
          * @example
-         * var a = new pc.Mat4().setFromEulerAngles(10, 20, 30);
-         * var b = new pc.Mat4().setFromAxisAngle(pc.Vec3.UP, 180);
-         * var r = new pc.Mat4();
+         * auto a = new pc.Mat4().setFromEulerAngles(10, 20, 30);
+         * auto b = new pc.Mat4().setFromAxisAngle(pc.Vec3.UP, 180);
+         * auto r = new pc.Mat4();
          *
          * // r = a * b
          * r.mul2(a, b);
          *
          * console.log("The result of the multiplication is: " r.toString());
          */
-        mul2(lhs: Mat4, rhs: Mat4) {
-            var a00, a01, a02, a03,
+        mul2(Mat4 lhs, Mat4 rhs) {
+            auto a00, a01, a02, a03,
                 a10, a11, a12, a13,
                 a20, a21, a22, a23,
                 a30, a31, a32, a33,
                 b0, b1, b2, b3,
                 a = lhs.data,
                 b = rhs.data,
-                r = this.data;
+                r = this->data;
 
             a00 = a[0];
             a01 = a[1];
@@ -279,16 +279,16 @@ namespace pc {
          * @param {pc.Mat4} rhs The 4x4 matrix used as the second multiplicand of the operation.
          * @returns {pc.Mat4} Self for chaining.
          * @example
-         * var a = new pc.Mat4().setFromEulerAngles(10, 20, 30);
-         * var b = new pc.Mat4().setFromAxisAngle(pc.Vec3.UP, 180);
+         * auto a = new pc.Mat4().setFromEulerAngles(10, 20, 30);
+         * auto b = new pc.Mat4().setFromAxisAngle(pc.Vec3.UP, 180);
          *
          * // a = a * b
          * a.mul(b);
          *
          * console.log("The result of the multiplication is: " a.toString());
          */
-        mul(rhs: Mat4) {
-            return this.mul2(this, rhs);
+        mul(Mat4 rhs) {
+            return this->mul2(this, rhs);
         }
 
         /**
@@ -300,23 +300,23 @@ namespace pc {
          * @returns {pc.Vec3} The input point v transformed by the current instance.
          * @example
          * // Create a 3-dimensional point
-         * var v = new pc.Vec3(1, 2, 3);
+         * auto v = new pc.Vec3(1, 2, 3);
          *
          * // Create a 4x4 rotation matrix
-         * var m = new pc.Mat4().setFromEulerAngles(10, 20, 30);
+         * auto m = new pc.Mat4().setFromEulerAngles(10, 20, 30);
          *
-         * var tv = m.transformPoint(v);
+         * auto tv = m.transformPoint(v);
          */
-        transformPoint(vec: Vec3, res?: Vec3) {
-            var x, y, z, m;
+        transformPoint(Vec3 vec, res?: Vec3) {
+            auto x, y, z, m;
 
-            m = this.data;
+            m = this->data;
 
             x = vec.x;
             y = vec.y;
             z = vec.z;
 
-            res = (res === undefined) ? new pc.Vec3() : res;
+            res = (res == undefined) ? new pc.Vec3() : res;
 
             res.x = x * m[0] + y * m[4] + z * m[8] + m[12];
             res.y = x * m[1] + y * m[5] + z * m[9] + m[13];
@@ -334,23 +334,23 @@ namespace pc {
          * @returns {pc.Vec3} The input vector v transformed by the current instance.
          * @example
          * // Create a 3-dimensional vector
-         * var v = new pc.Vec3(1, 2, 3);
+         * auto v = new pc.Vec3(1, 2, 3);
          *
          * // Create a 4x4 rotation matrix
-         * var m = new pc.Mat4().setFromEulerAngles(10, 20, 30);
+         * auto m = new pc.Mat4().setFromEulerAngles(10, 20, 30);
          *
-         * var tv = m.transformVector(v);
+         * auto tv = m.transformVector(v);
          */
-        transformVector(vec: Vec3, res?: Vec3) {
-            var x, y, z, m;
+        transformVector(Vec3 vec, res?: Vec3) {
+            auto x, y, z, m;
 
-            m = this.data;
+            m = this->data;
 
             x = vec.x;
             y = vec.y;
             z = vec.z;
 
-            res = (res === undefined) ? new pc.Vec3() : res;
+            res = (res == undefined) ? new pc.Vec3() : res;
 
             res.x = x * m[0] + y * m[4] + z * m[8];
             res.y = x * m[1] + y * m[5] + z * m[9];
@@ -368,27 +368,27 @@ namespace pc {
          * @returns {pc.Vec4} The input vector v transformed by the current instance.
          * @example
          * // Create an input 4-dimensional vector
-         * var v = new pc.Vec4(1, 2, 3, 4);
+         * auto v = new pc.Vec4(1, 2, 3, 4);
          *
          * // Create an output 4-dimensional vector
-         * var result = new pc.Vec4();
+         * auto result = new pc.Vec4();
          *
          * // Create a 4x4 rotation matrix
-         * var m = new pc.Mat4().setFromEulerAngles(10, 20, 30);
+         * auto m = new pc.Mat4().setFromEulerAngles(10, 20, 30);
          *
          * m.transformVec4(v, result);
          */
-        transformVec4(vec: Vec4, res?: Vec4) {
-            var x, y, z, w, m;
+        transformVec4(Vec4 vec, res?: Vec4) {
+            auto x, y, z, w, m;
 
-            m = this.data;
+            m = this->data;
 
             x = vec.x;
             y = vec.y;
             z = vec.z;
             w = vec.w;
 
-            res = (res === undefined) ? new pc.Vec4() : res;
+            res = (res == undefined) ? new pc.Vec4() : res;
 
             res.x = x * m[0] + y * m[4] + z * m[8] + w * m[12];
             res.y = x * m[1] + y * m[5] + z * m[9] + w * m[13];
@@ -412,22 +412,22 @@ namespace pc {
          * @param {pc.Vec3} up 3-d vector holding the up direction.
          * @returns {pc.Mat4} Self for chaining.
          * @example
-         * var position = new pc.Vec3(10, 10, 10);
-         * var target = new pc.Vec3(0, 0, 0);
-         * var up = new pc.Vec3(0, 1, 0);
-         * var m = new pc.Mat4().setLookAt(position, target, up);
+         * auto position = new pc.Vec3(10, 10, 10);
+         * auto target = new pc.Vec3(0, 0, 0);
+         * auto up = new pc.Vec3(0, 1, 0);
+         * auto m = new pc.Mat4().setLookAt(position, target, up);
          */
-        setLookAt(position: Vec3, target: Vec3, up: Vec3) {
-            var x = PreallocatedVec3.setLookAt_x;
-            var y = PreallocatedVec3.setLookAt_y;
-            var z = PreallocatedVec3.setLookAt_z;
+        setLookAt(Vec3 position, Vec3 target, Vec3 up) {
+            auto x = PreallocatedVec3.setLookAt_x;
+            auto y = PreallocatedVec3.setLookAt_y;
+            auto z = PreallocatedVec3.setLookAt_z;
 
             z.sub2(position, target).normalize();
             y.copy(up).normalize();
             x.cross(y, z).normalize();
             y.cross(z, x);
 
-            var r = this.data;
+            auto r = this->data;
 
             r[0]  = x.x;
             r[1]  = x.y;
@@ -464,17 +464,17 @@ namespace pc {
          * @returns {pc.Mat4} Self for chaining.
          * @example
          * // Create a 4x4 perspective projection matrix
-         * var f = pc.Mat4().setFrustum(-2, 2, -1, 1, 1, 1000);
+         * auto f = pc.Mat4().setFrustum(-2, 2, -1, 1, 1, 1000);
          */
-        setFrustum(left: number, right: number, bottom: number, top: number, znear: number, zfar: number) {
-            var temp1, temp2, temp3, temp4, r;
+        setFrustum(float left, float right, float bottom, float top, float znear, float zfar) {
+            auto temp1, temp2, temp3, temp4, r;
 
             temp1 = 2 * znear;
             temp2 = right - left;
             temp3 = top - bottom;
             temp4 = zfar - znear;
 
-            r = this.data;
+            r = this->data;
             r[0] = temp1 / temp2;
             r[1] = 0;
             r[2] = 0;
@@ -511,10 +511,10 @@ namespace pc {
          * @returns {pc.Mat4} Self for chaining.
          * @example
          * // Create a 4x4 perspective projection matrix
-         * var persp = pc.Mat4().setPerspective(45, 16 / 9, 1, 1000);
+         * auto persp = pc.Mat4().setPerspective(45, 16 / 9, 1, 1000);
          */
-        setPerspective(fov: number, aspect: number, znear: number, zfar: number, fovIsHorizontal?: boolean) {
-            var xmax, ymax;
+        setPerspective(float fov, float aspect, float znear, float zfar, fovIsHorizontal?: boolean) {
+            auto xmax, ymax;
 
             if (!fovIsHorizontal) {
                 ymax = znear * Math.tan(fov * Math.PI / 360);
@@ -524,7 +524,7 @@ namespace pc {
                 ymax = xmax / aspect;
             }
 
-            return this.setFrustum(-xmax, xmax, -ymax, ymax, znear, zfar);
+            return this->setFrustum(-xmax, xmax, -ymax, ymax, znear, zfar);
         }
 
         /**
@@ -541,10 +541,10 @@ namespace pc {
          * @returns {pc.Mat4} Self for chaining.
          * @example
          * // Create a 4x4 orthographic projection matrix
-         * var ortho = pc.Mat4().ortho(-2, 2, -2, 2, 1, 1000);
+         * auto ortho = pc.Mat4().ortho(-2, 2, -2, 2, 1, 1000);
          */
-        setOrtho(left: number, right: number, bottom: number, top: number, near: number, far: number) {
-            var r = this.data;
+        setOrtho(float left, float right, float bottom, float top, float near, float far) {
+            auto r = this->data;
 
             r[0] = 2 / (right - left);
             r[1] = 0;
@@ -576,10 +576,10 @@ namespace pc {
          * @returns {pc.Mat4} Self for chaining.
          * @example
          * // Create a 4x4 rotation matrix
-         * var rm = new pc.Mat4().setFromAxisAngle(pc.Vec3.UP, 90);
+         * auto rm = new pc.Mat4().setFromAxisAngle(pc.Vec3.UP, 90);
          */
-        setFromAxisAngle(axis: Vec3, angle: number) {
-            var x, y, z, c, s, t, tx, ty, m;
+        setFromAxisAngle(Vec3 axis, float angle) {
+            auto x, y, z, c, s, t, tx, ty, m;
 
             angle *= pc.math.DEG_TO_RAD;
 
@@ -591,7 +591,7 @@ namespace pc {
             t = 1 - c;
             tx = t * x;
             ty = t * y;
-            m = this.data;
+            m = this->data;
 
             m[0] = tx * x + c;
             m[1] = tx * y + s * z;
@@ -624,10 +624,10 @@ namespace pc {
          * @returns {pc.Mat4} Self for chaining.
          * @example
          * // Create a 4x4 translation matrix
-         * var tm = new pc.Mat4().setTranslate(10, 10, 10);
+         * auto tm = new pc.Mat4().setTranslate(10, 10, 10);
          */
-        setTranslate(x: number, y: number, z: number) {
-            var m = this.data;
+        setTranslate(float x, float y, float z) {
+            auto m = this->data;
 
             m[0] = 1;
             m[1] = 0;
@@ -660,10 +660,10 @@ namespace pc {
          * @returns {pc.Mat4} Self for chaining.
          * @example
          * // Create a 4x4 scale matrix
-         * var sm = new pc.Mat4().setScale(10, 10, 10);
+         * auto sm = new pc.Mat4().setScale(10, 10, 10);
          */
-        setScale(x: number, y: number, z: number) {
-            var m = this.data;
+        setScale(float x, float y, float z) {
+            auto m = this->data;
 
             m[0] = x;
             m[1] = 0;
@@ -692,13 +692,13 @@ namespace pc {
          * @returns {pc.Mat4} Self for chaining.
          * @example
          * // Create a 4x4 rotation matrix of 180 degrees around the y-axis
-         * var rot = new pc.Mat4().setFromAxisAngle(pc.Vec3.UP, 180);
+         * auto rot = new pc.Mat4().setFromAxisAngle(pc.Vec3.UP, 180);
          *
          * // Invert in place
          * rot.invert();
          */
         invert() {
-            var a00, a01, a02, a03,
+            auto a00, a01, a02, a03,
                 a10, a11, a12, a13,
                 a20, a21, a22, a23,
                 a30, a31, a32, a33,
@@ -707,7 +707,7 @@ namespace pc {
                 b08, b09, b10, b11,
                 det, invDet, m;
 
-            m = this.data;
+            m = this->data;
             a00 = m[0];
             a01 = m[1];
             a02 = m[2];
@@ -739,8 +739,8 @@ namespace pc {
             b11 = a22 * a33 - a23 * a32;
 
             det = (b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06);
-            if (det === 0) {
-                this.setIdentity();
+            if (det == 0) {
+                this->setIdentity();
             } else {
                 invDet = 1 / det;
 
@@ -773,8 +773,8 @@ namespace pc {
          * @param {Array} src Source array. Must have 16 values.
          * @returns {pc.Mat4} Self for chaining.
          */
-        set(src: any) {
-            var dst = this.data;
+        set(any src) {
+            auto dst = this->data;
             dst[0] = src[0];
             dst[1] = src[1];
             dst[2] = src[2];
@@ -805,7 +805,7 @@ namespace pc {
          * console.log("The matrix is " + (m.isIdentity() ? "identity" : "not identity"));
          */
         setIdentity() {
-            var m = this.data;
+            auto m = this->data;
             m[0] = 1;
             m[1] = 0;
             m[2] = 0;
@@ -836,15 +836,15 @@ namespace pc {
          * @param {pc.Vec3} s A 3-d vector scale.
          * @returns {pc.Mat4} Self for chaining.
          * @example
-         * var t = new pc.Vec3(10, 20, 30);
-         * var r = new pc.Quat();
-         * var s = new pc.Vec3(2, 2, 2);
+         * auto t = new pc.Vec3(10, 20, 30);
+         * auto r = new pc.Quat();
+         * auto s = new pc.Vec3(2, 2, 2);
          *
-         * var m = new pc.Mat4();
+         * auto m = new pc.Mat4();
          * m.setTRS(t, r, s);
          */
-        setTRS(t: Vec3, r: Quat, s: Vec3) {
-            var tx, ty, tz, qx, qy, qz, qw, sx, sy, sz,
+        setTRS(Vec3 t, Quat r, Vec3 s) {
+            auto tx, ty, tz, qx, qy, qz, qw, sx, sy, sz,
                 x2, y2, z2, xx, xy, xz, yy, yz, zz, wx, wy, wz, m;
 
             tx = t.x;
@@ -873,7 +873,7 @@ namespace pc {
             wy = qw * y2;
             wz = qw * z2;
 
-            m = this.data;
+            m = this->data;
 
             m[0] = (1 - (yy + zz)) * sx;
             m[1] = (xy + wz) * sx;
@@ -904,13 +904,13 @@ namespace pc {
          * @description Sets the specified matrix to its transpose.
          * @returns {pc.Mat4} Self for chaining.
          * @example
-         * var m = new pc.Mat4();
+         * auto m = new pc.Mat4();
          *
          * // Transpose in place
          * m.transpose();
          */
         transpose() {
-            var tmp, m = this.data;
+            auto tmp, m = this->data;
 
             tmp = m[1];
             m[1] = m[4];
@@ -939,24 +939,24 @@ namespace pc {
             return this;
         }
 
-        invertTo3x3(res: Mat3) {
-            var a11, a21, a31, a12, a22, a32, a13, a23, a33,
+        invertTo3x3(Mat3 res) {
+            auto a11, a21, a31, a12, a22, a32, a13, a23, a33,
                 m, r, det, idet;
 
-            m = this.data;
+            m = this->data;
             r = res.data;
 
-            var m0 = m[0];
-            var m1 = m[1];
-            var m2 = m[2];
+            auto m0 = m[0];
+            auto m1 = m[1];
+            auto m2 = m[2];
 
-            var m4 = m[4];
-            var m5 = m[5];
-            var m6 = m[6];
+            auto m4 = m[4];
+            auto m5 = m[5];
+            auto m6 = m[6];
 
-            var m8 = m[8];
-            var m9 = m[9];
-            var m10 = m[10];
+            auto m8 = m[8];
+            auto m9 = m[9];
+            auto m10 = m[10];
 
             a11 =  m10 * m5 - m6 * m9;
             a21 = -m10 * m1 + m2 * m9;
@@ -969,7 +969,7 @@ namespace pc {
             a33 =  m5  * m0 - m1 * m4;
 
             det =  m0 * a11 + m1 * a12 + m2 * a13;
-            if (det === 0) { // no inverse
+            if (det == 0) { // no inverse
                 return this;
             }
 
@@ -996,16 +996,16 @@ namespace pc {
          * @returns {pc.Vec3} The translation of the specified 4x4 matrix.
          * @example
          * // Create a 4x4 matrix
-         * var m = new pc.Mat4();
+         * auto m = new pc.Mat4();
          *
          * // Query the z-axis component
-         * var t = new pc.Vec3();
+         * auto t = new pc.Vec3();
          * m.getTranslation(t);
          */
         getTranslation(t?: Vec3) {
-            t = (t === undefined) ? new pc.Vec3() : t;
+            t = (t == undefined) ? new pc.Vec3() : t;
 
-            return t.set(this.data[12], this.data[13], this.data[14]);
+            return t.set(this->data[12], this->data[13], this->data[14]);
         }
 
         /**
@@ -1016,16 +1016,16 @@ namespace pc {
          * @returns {pc.Vec3} The x-axis of the specified 4x4 matrix.
          * @example
          * // Create a 4x4 matrix
-         * var m = new pc.Mat4();
+         * auto m = new pc.Mat4();
          *
          * // Query the z-axis component
-         * var x = new pc.Vec3();
+         * auto x = new pc.Vec3();
          * m.getX(x);
          */
         getX(x?: Vec3) {
-            x = (x === undefined) ? new pc.Vec3() : x;
+            x = (x == undefined) ? new pc.Vec3() : x;
 
-            return x.set(this.data[0], this.data[1], this.data[2]);
+            return x.set(this->data[0], this->data[1], this->data[2]);
         }
 
         /**
@@ -1036,16 +1036,16 @@ namespace pc {
          * @returns {pc.Vec3} The y-axis of the specified 4x4 matrix.
          * @example
          * // Create a 4x4 matrix
-         * var m = new pc.Mat4();
+         * auto m = new pc.Mat4();
          *
          * // Query the z-axis component
-         * var y = new pc.Vec3();
+         * auto y = new pc.Vec3();
          * m.getY(y);
          */
         getY(y?: Vec3) {
-            y = (y === undefined) ? new pc.Vec3() : y;
+            y = (y == undefined) ? new pc.Vec3() : y;
 
-            return y.set(this.data[4], this.data[5], this.data[6]);
+            return y.set(this->data[4], this->data[5], this->data[6]);
         }
 
         /**
@@ -1056,16 +1056,16 @@ namespace pc {
          * @returns {pc.Vec3} The z-axis of the specified 4x4 matrix.
          * @example
          * // Create a 4x4 matrix
-         * var m = new pc.Mat4();
+         * auto m = new pc.Mat4();
          *
          * // Query the z-axis component
-         * var z = new pc.Vec3();
+         * auto z = new pc.Vec3();
          * m.getZ(z);
          */
         getZ(z?: Vec3) {
-            z = (z === undefined) ? new pc.Vec3() : z;
+            z = (z == undefined) ? new pc.Vec3() : z;
 
-            return z.set(this.data[8], this.data[9], this.data[10]);
+            return z.set(this->data[8], this->data[9], this->data[10]);
         }
 
         /**
@@ -1076,21 +1076,21 @@ namespace pc {
          * @returns {pc.Vec3} The scale in X, Y and Z of the specified 4x4 matrix.
          * @example
          * // Create a 4x4 scale matrix
-         * var m = new pc.Mat4().scale(2, 3, 4);
+         * auto m = new pc.Mat4().scale(2, 3, 4);
          *
          * // Query the scale component
-         * var scale = m.getScale();
+         * auto scale = m.getScale();
          */
         getScale(scale?: Vec3) {
-            var x = PreallocatedVec3.getScale_x;
-            var y = PreallocatedVec3.getScale_y;
-            var z = PreallocatedVec3.getScale_z;
+            auto x = PreallocatedVec3.getScale_x;
+            auto y = PreallocatedVec3.getScale_y;
+            auto z = PreallocatedVec3.getScale_z;
 
-            scale = (scale === undefined) ? new pc.Vec3() : scale;
+            scale = (scale == undefined) ? new pc.Vec3() : scale;
 
-            this.getX(x);
-            this.getY(y);
-            this.getZ(z);
+            this->getX(x);
+            this->getY(y);
+            this->getZ(z);
             scale.set(x.length(), y.length(), z.length());
 
             return scale;
@@ -1106,14 +1106,14 @@ namespace pc {
          * @param {Number} ez Angle to rotate around Z axis in degrees.
          * @returns {pc.Mat4} Self for chaining.
          * @example
-         * var m = new pc.Mat4();
+         * auto m = new pc.Mat4();
          * m.setFromEulerAngles(45, 90, 180);
          */
         // http://en.wikipedia.org/wiki/Rotation_matrix#Conversion_from_and_to_axis-angle
         // The 3D space is right-handed, so the rotation around each axis will be counterclockwise
         // for an observer placed so that the axis goes in his or her direction (Right-hand rule).
-        setFromEulerAngles(ex: number, ey: number, ez: number) {
-            var s1, c1, s2, c2, s3, c3, m;
+        setFromEulerAngles(float ex, float ey, float ez) {
+            auto s1, c1, s2, c2, s3, c3, m;
 
             ex *= pc.math.DEG_TO_RAD;
             ey *= pc.math.DEG_TO_RAD;
@@ -1127,7 +1127,7 @@ namespace pc {
             s3 = Math.sin(-ez);
             c3 = Math.cos(-ez);
 
-            m = this.data;
+            m = this->data;
 
             // Set rotation elements
             m[0] = c2 * c3;
@@ -1162,22 +1162,22 @@ namespace pc {
          * @returns {pc.Vec3} A 3-d vector containing the Euler angles.
          * @example
          * // Create a 4x4 rotation matrix of 45 degrees around the y-axis
-         * var m = new pc.Mat4().setFromAxisAngle(pc.Vec3.UP, 45);
+         * auto m = new pc.Mat4().setFromAxisAngle(pc.Vec3.UP, 45);
          *
-         * var eulers = m.getEulerAngles();
+         * auto eulers = m.getEulerAngles();
          */
         getEulerAngles(eulers?: Vec3) {
-            var x, y, z, sx, sy, sz, m, halfPi, scale;
+            auto x, y, z, sx, sy, sz, m, halfPi, scale;
 
             scale = PreallocatedVec3.getEulerAngles_scale;
-            eulers = (eulers === undefined) ? new pc.Vec3() : eulers;
+            eulers = (eulers == undefined) ? new pc.Vec3() : eulers;
 
-            this.getScale(scale);
+            this->getScale(scale);
             sx = scale.x;
             sy = scale.y;
             sz = scale.z;
 
-            m = this.data;
+            m = this->data;
 
             y = Math.asin(-m[2] / sx);
             halfPi = Math.PI * 0.5;
@@ -1206,16 +1206,16 @@ namespace pc {
          * @description Converts the specified matrix to string form.
          * @returns {String} The matrix in string form.
          * @example
-         * var m = new pc.Mat4();
+         * auto m = new pc.Mat4();
          * // Should output '[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]'
          * console.log(m.toString());
          */
         toString() {
-            var i, t;
+            auto i, t;
 
             t = '[';
             for (i = 0; i < 16; i += 1) {
-                t += this.data[i];
+                t += this->data[i];
                 t += (i !== 15) ? ', ' : '';
             }
             t += ']';
@@ -1233,7 +1233,7 @@ namespace pc {
      */
     Object.defineProperty(Mat4, 'IDENTITY', {
         get: (function () {
-            var identity = new Mat4();
+            auto identity = new Mat4();
             return function () {
                 return identity;
             };
@@ -1250,7 +1250,7 @@ namespace pc {
      */
     Object.defineProperty(Mat4, 'ZERO', {
         get: (function () {
-            var zero = new Mat4().set([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+            auto zero = new Mat4().set([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
             return function () {
                 return zero;
             };
