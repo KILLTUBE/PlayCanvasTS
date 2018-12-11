@@ -29,7 +29,7 @@ namespace pc {
          * var dst = src.clone();
          * console.log("The two matrices are " + (src.equals(dst) ? "equal" : "different"));
          */
-        clone() {
+        clone(): Mat3 {
             return new pc.Mat3().copy(this);
         }
 
@@ -45,7 +45,7 @@ namespace pc {
          * dst.copy(src);
          * console.log("The two matrices are " + (src.equals(dst) ? "equal" : "different"));
          */
-        copy(rhs: Mat3) {
+        copy(rhs: Mat3): Mat3 {
             var src = rhs.data;
             var dst = this.data;
 
@@ -73,7 +73,7 @@ namespace pc {
          * var dst = new pc.Mat3();
          * dst.copy(src);
          */
-        set(src: any) {
+        set(src: any): Mat3 {
             var dst = this.data;
 
             dst[0] = src[0];
@@ -100,7 +100,7 @@ namespace pc {
          * var b = new pc.Mat3();
          * console.log("The two matrices are " + (a.equals(b) ? "equal" : "different"));
          */
-        equals(rhs: Mat3) {
+        equals(rhs: Mat3): boolean {
             var l = this.data;
             var r = rhs.data;
 
@@ -124,7 +124,7 @@ namespace pc {
          * var m = new pc.Mat3();
          * console.log("The matrix is " + (m.isIdentity() ? "identity" : "not identity"));
          */
-        isIdentity() {
+        isIdentity(): boolean {
             var m = this.data;
             return ((m[0] === 1) &&
                     (m[1] === 0) &&
@@ -146,7 +146,7 @@ namespace pc {
          * m.setIdentity();
          * console.log("The matrix is " + (m.isIdentity() ? "identity" : "not identity"));
          */
-        setIdentity() {
+        setIdentity(): Mat3 {
             var m = this.data;
             m[0] = 1;
             m[1] = 0;
@@ -173,7 +173,7 @@ namespace pc {
          * // Should output '[1, 0, 0, 0, 1, 0, 0, 0, 1]'
          * console.log(m.toString());
          */
-        toString() {
+        toString(): string {
             var t = '[';
             for (var i = 0; i < 9; i++) {
                 t += this.data[i];
@@ -194,7 +194,7 @@ namespace pc {
          * // Transpose in place
          * m.transpose();
          */
-        transpose() {
+        transpose(): Mat3 {
             var m = this.data;
 
             var tmp;

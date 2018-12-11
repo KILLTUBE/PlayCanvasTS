@@ -48,7 +48,7 @@ namespace pc {
          * // Should output [30, 30, 30]
          * console.log("The result of the addition is: " + a.toString());
          */
-        add(rhs: Vec4) {
+        add(rhs: Vec4): Vec4 {
             this.x += rhs.x;
             this.y += rhs.y;
             this.z += rhs.z;
@@ -74,7 +74,7 @@ namespace pc {
          *
          * console.log("The result of the addition is: " + r.toString());
          */
-        add2(lhs: Vec4, rhs: Vec4) {
+        add2(lhs: Vec4, rhs: Vec4): Vec4 {
             this.x = lhs.x + rhs.x;
             this.y = lhs.y + rhs.y;
             this.z = lhs.z + rhs.z;
@@ -93,7 +93,7 @@ namespace pc {
          * var vclone = v.clone();
          * console.log("The result of the cloning is: " + vclone.toString());
          */
-        clone() {
+        clone(): Vec4 {
             return new Vec4().copy(this);
         }
 
@@ -111,7 +111,7 @@ namespace pc {
          *
          * console.log("The two vectors are " + (dst.equals(src) ? "equal" : "different"));
          */
-        copy(rhs: Vec4) {
+        copy(rhs: Vec4): Vec4 {
             this.x = rhs.x;
             this.y = rhs.y;
             this.z = rhs.z;
@@ -132,7 +132,7 @@ namespace pc {
          * var v1dotv2 = v1.dot(v2);
          * console.log("The result of the dot product is: " + v1dotv2);
          */
-        dot(rhs: Vec4) {
+        dot(rhs: Vec4): number {
             return this.x * rhs.x + this.y * rhs.y + this.z * rhs.z + this.w * rhs.w;
         }
 
@@ -147,7 +147,7 @@ namespace pc {
          * var b = new pc.Vec4(5, 6, 7, 8);
          * console.log("The two vectors are " + (a.equals(b) ? "equal" : "different"));
          */
-        equals(rhs: Vec4) {
+        equals(rhs: Vec4): boolean {
             return this.x === rhs.x && this.y === rhs.y && this.z === rhs.z && this.w === rhs.w;
         }
 
@@ -162,7 +162,7 @@ namespace pc {
          * // Should output 5
          * console.log("The length of the vector is: " + len);
          */
-        length() {
+        length(): number {
             return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
         }
 
@@ -177,7 +177,7 @@ namespace pc {
          * // Should output 25
          * console.log("The length squared of the vector is: " + len);
          */
-        lengthSq() {
+        lengthSq(): number {
             return this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w;
         }
 
@@ -200,7 +200,7 @@ namespace pc {
          * r.lerp(a, b, 0.5); // r is 5, 5, 5, 5
          * r.lerp(a, b, 1);   // r is equal to b
          */
-        lerp(lhs: Vec4, rhs: Vec4, alpha: number) {
+        lerp(lhs: Vec4, rhs: Vec4, alpha: number): Vec4 {
             this.x = lhs.x + alpha * (rhs.x - lhs.x);
             this.y = lhs.y + alpha * (rhs.y - lhs.y);
             this.z = lhs.z + alpha * (rhs.z - lhs.z);
@@ -224,7 +224,7 @@ namespace pc {
          * // Should output 8, 15, 24, 35
          * console.log("The result of the multiplication is: " + a.toString());
          */
-        mul(rhs: Vec4) {
+        mul(rhs: Vec4): Vec4 {
             this.x *= rhs.x;
             this.y *= rhs.y;
             this.z *= rhs.z;
@@ -250,7 +250,7 @@ namespace pc {
          * // Should output 8, 15, 24, 35
          * console.log("The result of the multiplication is: " + r.toString());
          */
-        mul2(lhs: Vec4, rhs: Vec4) {
+        mul2(lhs: Vec4, rhs: Vec4): Vec4 {
             this.x = lhs.x * rhs.x;
             this.y = lhs.y * rhs.y;
             this.z = lhs.z * rhs.z;
@@ -273,7 +273,7 @@ namespace pc {
          * // Should output 1, 0, 0, 0
          * console.log("The result of the vector normalization is: " + v.toString());
          */
-        normalize() {
+        normalize(): Vec4 {
             var lengthSq = this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w;
             if (lengthSq > 0) {
                 var invLength = 1 / Math.sqrt(lengthSq);
@@ -305,7 +305,7 @@ namespace pc {
          * // Divide by 2
          * v.scale(0.5);
          */
-        scale(scalar: number) {
+        scale(scalar: number): Vec4 {
             this.x *= scalar;
             this.y *= scalar;
             this.z *= scalar;
@@ -330,7 +330,7 @@ namespace pc {
          * // Should output 5, 10, 20, 40
          * console.log("The result of the vector set is: " + v.toString());
          */
-        set(x: number, y: number, z: number, w: number) {
+        set(x: number, y: number, z: number, w: number): Vec4 {
             this.x = x;
             this.y = y;
             this.z = z;
@@ -354,7 +354,7 @@ namespace pc {
          * // Should output [-10, -10, -10, -10]
          * console.log("The result of the subtraction is: " + a.toString());
          */
-        sub(rhs: Vec4) {
+        sub(rhs: Vec4): Vec4 {
             this.x -= rhs.x;
             this.y -= rhs.y;
             this.z -= rhs.z;
@@ -380,7 +380,7 @@ namespace pc {
          * // Should output [-10, -10, -10, -10]
          * console.log("The result of the subtraction is: " + r.toString());
          */
-        sub2(lhs: Vec4, rhs: Vec4) {
+        sub2(lhs: Vec4, rhs: Vec4): Vec4 {
             this.x = lhs.x - rhs.x;
             this.y = lhs.y - rhs.y;
             this.z = lhs.z - rhs.z;
@@ -399,7 +399,7 @@ namespace pc {
          * // Should output '[20, 10, 5, 0]'
          * console.log(v.toString());
          */
-        toString() {
+        toString(): string {
             return '[' + this.x + ', ' + this.y + ', ' + this.z + ', ' + this.w + ']';
         }
     };

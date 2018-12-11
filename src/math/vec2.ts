@@ -40,7 +40,7 @@ namespace pc {
          * // Should output [30, 30]
          * console.log("The result of the addition is: " + a.toString());
          */
-        add(rhs: Vec2) {
+        add(rhs: Vec2): Vec2 {
             this.x += rhs.x;
             this.y += rhs.y;
 
@@ -64,7 +64,7 @@ namespace pc {
          *
          * console.log("The result of the addition is: " + r.toString());
          */
-        add2(lhs: Vec2, rhs: Vec2) {
+        add2(lhs: Vec2, rhs: Vec2): Vec2 {
             this.x = lhs.x + rhs.x;
             this.y = lhs.y + rhs.y;
 
@@ -81,7 +81,7 @@ namespace pc {
          * var vclone = v.clone();
          * console.log("The result of the cloning is: " + vclone.toString());
          */
-        clone() {
+        clone(): Vec2 {
             return new Vec2().copy(this);
         }
 
@@ -99,7 +99,7 @@ namespace pc {
          *
          * console.log("The two vectors are " + (dst.equals(src) ? "equal" : "different"));
          */
-        copy(rhs: Vec2) {
+        copy(rhs: Vec2): Vec2 {
             this.x = rhs.x;
             this.y = rhs.y;
 
@@ -118,7 +118,7 @@ namespace pc {
          * var v1dotv2 = v1.dot(v2);
          * console.log("The result of the dot product is: " + v1dotv2);
          */
-        dot(rhs: Vec2) {
+        dot(rhs: Vec2): number {
             return this.x * rhs.x + this.y * rhs.y;
         }
 
@@ -133,7 +133,7 @@ namespace pc {
          * var b = new pc.Vec2(4, 5);
          * console.log("The two vectors are " + (a.equals(b) ? "equal" : "different"));
          */
-        equals(rhs: Vec2) {
+        equals(rhs: Vec2): boolean {
             return this.x === rhs.x && this.y === rhs.y;
         }
 
@@ -148,7 +148,7 @@ namespace pc {
          * // Should output 5
          * console.log("The length of the vector is: " + len);
          */
-        length() {
+        length(): number {
             return Math.sqrt(this.x * this.x + this.y * this.y);
         }
 
@@ -163,7 +163,7 @@ namespace pc {
          * // Should output 25
          * console.log("The length squared of the vector is: " + len);
          */
-        lengthSq() {
+        lengthSq(): number {
             return this.x * this.x + this.y * this.y;
         }
 
@@ -186,7 +186,7 @@ namespace pc {
          * r.lerp(a, b, 0.5); // r is 5, 5
          * r.lerp(a, b, 1);   // r is equal to b
          */
-        lerp(lhs: Vec2, rhs: Vec2, alpha: number) {
+        lerp(lhs: Vec2, rhs: Vec2, alpha: number): Vec2 {
             this.x = lhs.x + alpha * (rhs.x - lhs.x);
             this.y = lhs.y + alpha * (rhs.y - lhs.y);
 
@@ -208,7 +208,7 @@ namespace pc {
          * // Should output 8, 15
          * console.log("The result of the multiplication is: " + a.toString());
          */
-        mul(rhs: Vec2) {
+        mul(rhs: Vec2): Vec2 {
             this.x *= rhs.x;
             this.y *= rhs.y;
 
@@ -232,7 +232,7 @@ namespace pc {
          * // Should output 8, 15
          * console.log("The result of the multiplication is: " + r.toString());
          */
-        mul2(lhs: Vec2, rhs: Vec2) {
+        mul2(lhs: Vec2, rhs: Vec2): Vec2 {
             this.x = lhs.x * rhs.x;
             this.y = lhs.y * rhs.y;
 
@@ -253,7 +253,7 @@ namespace pc {
          * // Should output 1, 0
          * console.log("The result of the vector normalization is: " + v.toString());
          */
-        normalize() {
+        normalize(): Vec2 {
             var lengthSq = this.x * this.x + this.y * this.y;
             if (lengthSq > 0) {
                 var invLength = 1 / Math.sqrt(lengthSq);
@@ -283,7 +283,7 @@ namespace pc {
          * // Divide by 2
          * v.scale(0.5);
          */
-        scale(scalar: number) {
+        scale(scalar: number): Vec2 {
             this.x *= scalar;
             this.y *= scalar;
 
@@ -304,7 +304,7 @@ namespace pc {
          * // Should output 5, 10
          * console.log("The result of the vector set is: " + v.toString());
          */
-        set(x: number, y: number) {
+        set(x: number, y: number): Vec2 {
             this.x = x;
             this.y = y;
 
@@ -326,7 +326,7 @@ namespace pc {
          * // Should output [-10, -10]
          * console.log("The result of the addition is: " + a.toString());
          */
-        sub(rhs: Vec2) {
+        sub(rhs: Vec2): Vec2 {
             this.x -= rhs.x;
             this.y -= rhs.y;
 
@@ -350,7 +350,7 @@ namespace pc {
          * // Should output [-10, -10]
          * console.log("The result of the addition is: " + r.toString());
          */
-        sub2(lhs: Vec2, rhs: Vec2) {
+        sub2(lhs: Vec2, rhs: Vec2): Vec2 {
             this.x = lhs.x - rhs.x;
             this.y = lhs.y - rhs.y;
 
@@ -367,7 +367,7 @@ namespace pc {
          * // Should output '[20, 10]'
          * console.log(v.toString());
          */
-        toString() {
+        toString(): string {
             return '[' + this.x + ', ' + this.y + ']';
         }
     }

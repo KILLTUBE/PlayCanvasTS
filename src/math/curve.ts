@@ -6,25 +6,25 @@ namespace pc {
      * @name pc.CURVE_LINEAR
      * @description A linear interpolation scheme.
      */
-    export const CURVE_LINEAR = 0;
+    export const CURVE_LINEAR: number = 0;
     /**
      * @enum pc.CURVE
      * @name pc.CURVE_SMOOTHSTEP
      * @description A smooth step interpolation scheme.
      */
-    export const CURVE_SMOOTHSTEP = 1;
+    export const CURVE_SMOOTHSTEP: number = 1;
     /**
      * @enum pc.CURVE
      * @name pc.CURVE_CATMULL
      * @description A Catmull-Rom spline interpolation scheme.
      */
-    export const CURVE_CATMULL = 2;
+    export const CURVE_CATMULL: number = 2;
     /**
      * @enum pc.CURVE
      * @name pc.CURVE_CARDINAL
      * @description A cardinal spline interpolation scheme.
      */
-    export const CURVE_CARDINAL = 3;
+    export const CURVE_CARDINAL: number = 3;
 
     /**
      * @constructor
@@ -64,7 +64,7 @@ namespace pc {
          * @param {Number} value Value of new key
          * @returns {Number[]} [time, value] pair
          */
-        add(time: number, value: number) {
+        add(time: number, value: number): number[] {
             var keys = this.keys;
             var len = keys.length;
             var i = 0;
@@ -87,7 +87,7 @@ namespace pc {
          * @param {Number} index The index of the key to return
          * @returns {Number[]} The key at the specified index
          */
-        get(index: number) {
+        get(index: number): number[] {
             return this.keys[index];
         }
 
@@ -96,7 +96,7 @@ namespace pc {
          * @name pc.Curve#sort
          * @description Sort keys by time.
          */
-        sort() {
+        sort(): void {
             this.keys.sort(function (a: number[], b: number[]) {
                 return a[0] - b[0];
             });
@@ -109,7 +109,7 @@ namespace pc {
          * @param {Number} time The time at which to calculate the value
          * @returns {Number} The interpolated value
          */
-        value(time: number) {
+        value(time: number): number {
             var i, len;
             var keys = this.keys;
 
@@ -196,7 +196,7 @@ namespace pc {
             return pc.math.lerp(leftValue, rightValue, interpolation);
         }
 
-        _interpolateHermite(p0: number, p1: number, t0: number, t1: number, s: number) {
+        _interpolateHermite(p0: number, p1: number, t0: number, t1: number, s: number): number {
             var s2 = s * s;
             var s3 = s * s * s;
             var h0 = 2 * s3 - 3 * s2 + 1;
@@ -207,18 +207,18 @@ namespace pc {
             return p0 * h0 + p1 * h1 + t0 * h2 + t1 * h3;
         }
 
-        _interpolateCardinal(p0: number, p1: number, p2: number, p3: number, s: number, t: number) {
+        _interpolateCardinal(p0: number, p1: number, p2: number, p3: number, s: number, t: number): number {
             var t0 = t * (p2 - p0);
             var t1 = t * (p3 - p1);
 
             return this._interpolateHermite(p1, p2, t0, t1, s);
         }
 
-        _interpolateCatmullRom(p0: number, p1: number, p2: number, p3: number, s: number) {
+        _interpolateCatmullRom(p0: number, p1: number, p2: number, p3: number, s: number): number {
             return this._interpolateCardinal(p0, p1, p2, p3, s, 0.5);
         }
 
-        closest(time: number) {
+        closest(time: number): number[] | null {
             var keys = this.keys;
             var length = keys.length;
             var min = 2;
@@ -243,14 +243,14 @@ namespace pc {
          * @description Returns a clone of the specified curve object.
          * @returns {pc.Curve} A clone of the specified curve
          */
-        clone() {
+        clone(): Curve {
             var result = new pc.Curve();
             result.keys = pc.extend(result.keys, this.keys);
             result.type = this.type;
             return result;
         }
 
-        quantize(precision: number) {
+        quantize(precision: number): Float32Array {
             precision = Math.max(precision, 2);
 
             var values = new Float32Array(precision);

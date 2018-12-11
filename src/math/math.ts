@@ -12,7 +12,7 @@ namespace pc.math {
      * // Convert 180 degrees to pi radians
      * var rad = 180 * pc.math.DEG_TO_RAD;
      */
-    export const DEG_TO_RAD = Math.PI / 180;
+    export const DEG_TO_RAD: number = Math.PI / 180;
 
     /**
      * @name pc.math.RAD_TO_DEG
@@ -22,7 +22,7 @@ namespace pc.math {
      * // Convert pi radians to 180 degrees
      * var deg = Math.PI * pc.math.RAD_TO_DEG;
      */
-    export const RAD_TO_DEG = 180 / Math.PI;
+    export const RAD_TO_DEG: number = 180 / Math.PI;
 
     /**
      * @function
@@ -33,7 +33,7 @@ namespace pc.math {
      * @param {Number} max Max value
      * @returns {Number} The clamped value
      */
-    export function clamp(value: number, min: number, max: number) {
+    export function clamp(value: number, min: number, max: number): number {
         if (value >= max) return max;
         if (value <= min) return min;
         return value;
@@ -49,7 +49,7 @@ namespace pc.math {
      * // Set bytes to [0x11, 0x22, 0x33]
      * var bytes = pc.math.intToBytes24(0x112233);
      */
-    export function intToBytes24(i: number) {
+    export function intToBytes24(i: number): number[] {
         var r, g, b;
 
         r = (i >> 16) & 0xff;
@@ -69,7 +69,7 @@ namespace pc.math {
      * // Set bytes to [0x11, 0x22, 0x33, 0x44]
      * var bytes = pc.math.intToBytes32(0x11223344);
      */
-    export function intToBytes32(i: number) {
+    export function intToBytes32(i: number): number[] {
         var r, g, b, a;
 
         r = (i >> 24) & 0xff;
@@ -95,7 +95,7 @@ namespace pc.math {
      * @param {Number} b A single byte (0-255)
      * @returns {Number} A single unsigned 24 bit Number.
      */
-    export function bytesToInt24(r: any, g: number, b: number) {
+    export function bytesToInt24(r: any, g: number, b: number): number {
         if (r.length) {
             b = r[2];
             g = r[1];
@@ -120,7 +120,7 @@ namespace pc.math {
      * @param {Number} b A single byte (0-255)
      * @param {Number} a A single byte (0-255)
      */
-    export function bytesToInt32(r: any, g?: number, b?: number, a?: number) {
+    export function bytesToInt32(r: any, g?: number, b?: number, a?: number): number {
         if (r.length) {
             a = r[3];
             b = r[2];
@@ -145,7 +145,7 @@ namespace pc.math {
      * a is returned. When alpha is 1, b is returned. Between 0 and 1, a linear interpolation between
      * a and b is returned. alpha is clamped between 0 and 1.
      */
-    export function lerp(a: number, b: number, alpha: number) {
+    export function lerp(a: number, b: number, alpha: number): number {
         return a + (b - a) * pc.math.clamp(alpha, 0, 1);
     }
 
@@ -161,7 +161,7 @@ namespace pc.math {
      * a is returned. When alpha is 1, b is returned. Between 0 and 1, a linear interpolation between
      * a and b is returned. alpha is clamped between 0 and 1.
      */
-    export function lerpAngle(a: number, b: number, alpha: number) {
+    export function lerpAngle(a: number, b: number, alpha: number): number {
         if (b - a > 180 ) {
             b -= 360;
         }
@@ -178,7 +178,7 @@ namespace pc.math {
      * @param {Number} x Number to check for power-of-two property.
      * @returns {Boolean} true if power-of-two and false otherwise.
      */
-    export function powerOfTwo(x: number) {
+    export function powerOfTwo(x: number): boolean {
         return ((x !== 0) && !(x & (x - 1)));
     }
 
@@ -189,7 +189,7 @@ namespace pc.math {
      * @param {Number} val The value for which to calculate the next power of 2.
      * @returns {Number} The next power of 2.
      */
-    export function nextPowerOfTwo(val: number) {
+    export function nextPowerOfTwo(val: number): number {
         val--;
         val |= (val >> 1);
         val |= (val >> 2);
@@ -209,7 +209,7 @@ namespace pc.math {
      * @param {Number} max Upper bound for range.
      * @returns {Number} Pseudo-random number between the supplied range.
      */
-    export function random(min: number, max: number) {
+    export function random(min: number, max: number): number {
         var diff = max - min;
         return Math.random() * diff + min;
     }
@@ -229,7 +229,7 @@ namespace pc.math {
      * @param {Number} x The value to interpolate.
      * @returns {Number} The smoothly interpolated value clamped between zero and one.
      */
-    export function smoothstep(min: number, max: number, x: number) {
+    export function smoothstep(min: number, max: number, x: number): number {
         if (x <= min) return 0;
         if (x >= max) return 1;
 
@@ -249,7 +249,7 @@ namespace pc.math {
      * @param {Number} x The value to interpolate.
      * @returns {Number} The smoothly interpolated value clamped between zero and one.
      */
-    export function smootherstep(min: number, max: number, x: number) {
+    export function smootherstep(min: number, max: number, x: number): number {
         if (x <= min) return 0;
         if (x >= max) return 1;
 

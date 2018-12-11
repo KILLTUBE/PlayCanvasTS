@@ -48,7 +48,7 @@ namespace pc {
          * @param {Number} index The index of the curve to return
          * @returns {pc.Curve} The curve at the specified index
          */
-        get(index: number) {
+        get(index: number): Curve {
             return this.curves[index];
         }
 
@@ -63,7 +63,7 @@ namespace pc {
          * to return the result.
          * @returns {Array} The interpolated curve values at the specified time
          */
-        value(time: number, result?: number[]) {
+        value(time: number, result?: number[]): number[] {
             var length = this.curves.length;
             result = result || [];
             result.length = length;
@@ -81,7 +81,7 @@ namespace pc {
          * @description Returns a clone of the specified curve set object.
          * @returns {pc.CurveSet} A clone of the specified curve set
          */
-        clone() {
+        clone(): CurveSet {
             var result = new pc.CurveSet();
 
             result.curves = [];
@@ -94,7 +94,7 @@ namespace pc {
             return result;
         }
 
-        quantize(precision: number) {
+        quantize(precision: number): Float32Array {
             precision = Math.max(precision, 2);
 
             var numCurves = this.curves.length;

@@ -98,11 +98,11 @@ namespace pc {
          *
          * console.log("The result of the cloning is: " + q.toString());
          */
-        clone() {
+        clone(): Quat {
             return new pc.Quat(this.x, this.y, this.z, this.w);
         }
 
-        conjugate() {
+        conjugate(): Quat {
             this.x *= -1;
             this.y *= -1;
             this.z *= -1;
@@ -122,7 +122,7 @@ namespace pc {
          * dst.copy(src, src);
          * console.log("The two quaternions are " + (src.equals(dst) ? "equal" : "different"));
          */
-        copy(rhs: Quat) {
+        copy(rhs: Quat): Quat {
             this.x = rhs.x;
             this.y = rhs.y;
             this.z = rhs.z;
@@ -142,7 +142,7 @@ namespace pc {
          * var b = new pc.Quat();
          * console.log("The two quaternions are " + (a.equals(b) ? "equal" : "different"));
          */
-        equals(rhs: Quat) {
+        equals(rhs: Quat): boolean {
             return ((this.x === rhs.x) && (this.y === rhs.y) && (this.z === rhs.z) && (this.w === rhs.w));
         }
 
@@ -166,7 +166,7 @@ namespace pc {
          * // Should output [0, 1, 0]
          * console.log(v.toString());
          */
-        getAxisAngle(axis: Vec3) {
+        getAxisAngle(axis: Vec3): number {
             var rad = Math.acos(this.w) * 2;
             var s = Math.sin(rad / 2);
             if (s !== 0) {
@@ -197,7 +197,7 @@ namespace pc {
          * @returns {pc.Vec3} The 3-dimensional vector holding the Euler angles that
          * correspond to the supplied quaternion.
          */
-        getEulerAngles(eulers?: Vec3) {
+        getEulerAngles(eulers?: Vec3): Vec3 {
             var x, y, z, qx, qy, qz, qw, a2;
 
             eulers = (eulers === undefined) ? new pc.Vec3() : eulers;
@@ -237,7 +237,7 @@ namespace pc {
          * // Invert in place
          * rot.invert();
          */
-        invert() {
+        invert(): Quat {
             return this.conjugate().normalize();
         }
 
@@ -252,7 +252,7 @@ namespace pc {
          * // Should output 5
          * console.log("The length of the quaternion is: " + len);
          */
-        length() {
+        length(): number {
             return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
         }
 
@@ -267,7 +267,7 @@ namespace pc {
          * // Should output 25
          * console.log("The length squared of the quaternion is: " + lenSq);
          */
-        lengthSq() {
+        lengthSq(): number {
             return this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w;
         }
 
@@ -287,7 +287,7 @@ namespace pc {
          *
          * console.log("The result of the multiplication is: " a.toString());
          */
-        mul(rhs: Quat) {
+        mul(rhs: Quat): Quat {
             var q1x, q1y, q1z, q1w, q2x, q2y, q2z, q2w;
 
             q1x = this.x;
@@ -326,7 +326,7 @@ namespace pc {
          *
          * console.log("The result of the multiplication is: " r.toString());
          */
-        mul2(lhs: Quat, rhs: Quat) {
+        mul2(lhs: Quat, rhs: Quat): Quat {
             var q1x, q1y, q1z, q1w, q2x, q2y, q2z, q2w;
 
             q1x = lhs.x;
@@ -360,7 +360,7 @@ namespace pc {
          * // Should output 0, 0, 0, 1
          * console.log("The result of the vector normalization is: " + v.toString());
          */
-        normalize() {
+        normalize(): Quat {
             var len = this.length();
             if (len === 0) {
                 this.x = this.y = this.z = 0;
@@ -392,7 +392,7 @@ namespace pc {
          * // Should output 1, 0, 0, 0
          * console.log("The result of the vector set is: " + q.toString());
          */
-        set(x: number, y: number, z: number, w: number) {
+        set(x: number, y: number, z: number, w: number): Quat {
             this.x = x;
             this.y = y;
             this.z = z;
@@ -412,7 +412,7 @@ namespace pc {
          * var q = new pc.Quat();
          * q.setFromAxisAngle(pc.Vec3.UP, 90);
          */
-        setFromAxisAngle(axis: Vec3, angle: number) {
+        setFromAxisAngle(axis: Vec3, angle: number): Quat {
             var sa, ca;
 
             angle *= 0.5 * pc.math.DEG_TO_RAD;
@@ -440,7 +440,7 @@ namespace pc {
          * var q = new pc.Quat();
          * q.setFromEulerAngles(45, 90, 180);
          */
-        setFromEulerAngles(ex: number, ey: number, ez: number) {
+        setFromEulerAngles(ex: number, ey: number, ez: number): Quat {
             var sx, cx, sy, cy, sz, cz, halfToRad;
 
             halfToRad = 0.5 * pc.math.DEG_TO_RAD;
@@ -478,7 +478,7 @@ namespace pc {
          * // Convert to a quaternion
          * var q = new pc.Quat().setFromMat4(rot);
          */
-        setFromMat4(m_: Mat4) {
+        setFromMat4(m_: Mat4): Quat {
             var m00, m01, m02, m10, m11, m12, m20, m21, m22,
                 tr, s, rs, lx, ly, lz;
 
@@ -589,7 +589,7 @@ namespace pc {
          * result = new pc.Quat().slerp(q1, q2, 0.5); // Return the midpoint interpolant
          * result = new pc.Quat().slerp(q1, q2, 1);   // Return q2
          */
-        slerp(lhs: Quat, rhs: Quat, alpha: number) {
+        slerp(lhs: Quat, rhs: Quat, alpha: number): Quat {
             // Algorithm sourced from:
             // http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/
             var lx, ly, lz, lw, rx, ry, rz, rw;
@@ -663,7 +663,7 @@ namespace pc {
          *
          * var tv = q.transformVector(v);
          */
-        transformVector(vec: Vec3, res?: Vec3) {
+        transformVector(vec: Vec3, res?: Vec3): Vec3 {
             if (res === undefined) {
                 res = new pc.Vec3();
             }
@@ -695,7 +695,7 @@ namespace pc {
          * // Should output '[0, 0, 0, 1]'
          * console.log(v.toString());
          */
-        toString() {
+        toString(): string {
             return '[' + this.x + ', ' + this.y + ', ' + this.z + ', ' + this.w + ']';
         }
     }
