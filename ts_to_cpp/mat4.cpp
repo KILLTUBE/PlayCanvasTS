@@ -35,9 +35,9 @@ namespace pc {
 		 *
 		 * console.log("The result of the addition is: " a.toString());
 		 */
-		Mat4 add2(Mat4 *lhs, Mat4 *rhs) {
-			auto a = lhs->data,
-				b = rhs->data,
+		Mat4 add2(Mat4 lhs, Mat4 rhs) {
+			auto a = lhs.data,
+				b = rhs.data,
 				r = this->data;
 
 			r[0] = a[0] + b[0];
@@ -57,7 +57,7 @@ namespace pc {
 			r[14] = a[14] + b[14];
 			r[15] = a[15] + b[15];
 
-			return this;
+			return *this;
 		}
 
 		/**
@@ -73,8 +73,8 @@ namespace pc {
 		 *
 		 * console.log("The result of the addition is: " a.toString());
 		 */
-		Mat4 add(Mat4 *rhs) {
-			return this->add2(this, rhs);
+		Mat4 add(Mat4 rhs) {
+			return *this->add2(this, rhs);
 		}
 
 		/**
@@ -103,8 +103,8 @@ namespace pc {
 		 * dst.copy(src);
 		 * console.log("The two matrices are " + (src.equals(dst) ? "equal" : "different"));
 		 */
-		Mat4 copy(Mat4 *rhs) {
-			auto src = rhs->data,
+		Mat4 copy(Mat4 rhs) {
+			auto src = rhs.data,
 				dst = this->data;
 
 			dst[0] = src[0];
@@ -124,7 +124,7 @@ namespace pc {
 			dst[14] = src[14];
 			dst[15] = src[15];
 
-			return this;
+			return *this;
 		}
 
 		/**
@@ -138,9 +138,9 @@ namespace pc {
 		 * auto b = new pc.Mat4();
 		 * console.log("The two matrices are " + (a.equals(b) ? "equal" : "different"));
 		 */
-		boolean equals(Mat4 *rhs) {
+		bool equals(Mat4 rhs) {
 			auto l = this->data,
-				r = rhs->data;
+				r = rhs.data;
 
 			return ((l[0] == r[0]) &&
 					(l[1] == r[1]) &&
@@ -169,7 +169,7 @@ namespace pc {
 		 * auto m = new pc.Mat4();
 		 * console.log("The matrix is " + (m.isIdentity() ? "identity" : "not identity"));
 		 */
-		boolean isIdentity() {
+		bool isIdentity() {
 			auto m = this->data;
 
 			return ((m[0] == 1) &&
@@ -208,37 +208,32 @@ namespace pc {
 		 *
 		 * console.log("The result of the multiplication is: " r.toString());
 		 */
-		Mat4 mul2(Mat4 *lhs, Mat4 *rhs) {
-			auto a00, a01, a02, a03,
-				a10, a11, a12, a13,
-				a20, a21, a22, a23,
-				a30, a31, a32, a33,
-				b0, b1, b2, b3,
-				a = lhs->data,
-				b = rhs->data,
-				r = this->data;
+		Mat4 mul2(Mat4 lhs, Mat4 rhs) {
+			auto a = lhs.data;
+			auto b = rhs.data;
+			auto r = this->data;
 
-			a00 = a[0];
-			a01 = a[1];
-			a02 = a[2];
-			a03 = a[3];
-			a10 = a[4];
-			a11 = a[5];
-			a12 = a[6];
-			a13 = a[7];
-			a20 = a[8];
-			a21 = a[9];
-			a22 = a[10];
-			a23 = a[11];
-			a30 = a[12];
-			a31 = a[13];
-			a32 = a[14];
-			a33 = a[15];
+			auto a00 = a[0];
+			auto a01 = a[1];
+			auto a02 = a[2];
+			auto a03 = a[3];
+			auto a10 = a[4];
+			auto a11 = a[5];
+			auto a12 = a[6];
+			auto a13 = a[7];
+			auto a20 = a[8];
+			auto a21 = a[9];
+			auto a22 = a[10];
+			auto a23 = a[11];
+			auto a30 = a[12];
+			auto a31 = a[13];
+			auto a32 = a[14];
+			auto a33 = a[15];
 
-			b0 = b[0];
-			b1 = b[1];
-			b2 = b[2];
-			b3 = b[3];
+			float b0 = b[0];
+			float b1 = b[1];
+			float b2 = b[2];
+			float b3 = b[3];
 			r[0]  = a00 * b0 + a10 * b1 + a20 * b2 + a30 * b3;
 			r[1]  = a01 * b0 + a11 * b1 + a21 * b2 + a31 * b3;
 			r[2]  = a02 * b0 + a12 * b1 + a22 * b2 + a32 * b3;
@@ -271,7 +266,7 @@ namespace pc {
 			r[14] = a02 * b0 + a12 * b1 + a22 * b2 + a32 * b3;
 			r[15] = a03 * b0 + a13 * b1 + a23 * b2 + a33 * b3;
 
-			return this;
+			return *this;
 		}
 
 		/**
@@ -289,8 +284,8 @@ namespace pc {
 		 *
 		 * console.log("The result of the multiplication is: " a.toString());
 		 */
-		Mat4 mul(Mat4 *rhs) {
-			return this->mul2(this, rhs);
+		Mat4 mul(Mat4 rhs) {
+			return *this->mul2(this, rhs);
 		}
 
 		/**
@@ -448,7 +443,7 @@ namespace pc {
 			r[14] = position.z;
 			r[15] = 1;
 
-			return this;
+			return *this;
 		}
 
 		/**
@@ -469,14 +464,12 @@ namespace pc {
 		 * auto f = pc.Mat4().setFrustum(-2, 2, -1, 1, 1, 1000);
 		 */
 		Mat4 setFrustum(float left, float right, float bottom, float top, float znear, float zfar) {
-			auto temp1, temp2, temp3, temp4, r;
+			auto temp1 = 2 * znear;
+			auto temp2 = right - left;
+			auto temp3 = top - bottom;
+			auto temp4 = zfar - znear;
 
-			temp1 = 2 * znear;
-			temp2 = right - left;
-			temp3 = top - bottom;
-			temp4 = zfar - znear;
-
-			r = this->data;
+			auto r = this->data;
 			r[0] = temp1 / temp2;
 			r[1] = 0;
 			r[2] = 0;
@@ -494,7 +487,7 @@ namespace pc {
 			r[14] = (-temp1 * zfar) / temp4;
 			r[15] = 0;
 
-			return this;
+			return *this;
 		}
 
 		/**
@@ -515,7 +508,7 @@ namespace pc {
 		 * // Create a 4x4 perspective projection matrix
 		 * auto persp = pc.Mat4().setPerspective(45, 16 / 9, 1, 1000);
 		 */
-		Mat4 setPerspective(float fov, float aspect, float znear, float zfar, fovIsHorizontal?: boolean) {
+		Mat4 setPerspective(float fov, float aspect, float znear, float zfar, fovIsHorizontal?: bool) {
 			auto xmax, ymax;
 
 			if (!fovIsHorizontal) {
@@ -526,7 +519,7 @@ namespace pc {
 				ymax = xmax / aspect;
 			}
 
-			return this->setFrustum(-xmax, xmax, -ymax, ymax, znear, zfar);
+			return *this->setFrustum(-xmax, xmax, -ymax, ymax, znear, zfar);
 		}
 
 		/**
@@ -565,7 +558,7 @@ namespace pc {
 			r[14] = -(far + near) / (far - near);
 			r[15] = 1;
 
-			return this;
+			return *this;
 		}
 
 		/**
@@ -612,7 +605,7 @@ namespace pc {
 			m[14] = 0;
 			m[15] = 1;
 
-			return this;
+			return *this;
 		}
 
 		/**
@@ -648,7 +641,7 @@ namespace pc {
 			m[14] = z;
 			m[15] = 1;
 
-			return this;
+			return *this;
 		}
 
 		/**
@@ -684,7 +677,7 @@ namespace pc {
 			m[14] = 0;
 			m[15] = 1;
 
-			return this;
+			return *this;
 		}
 
 		/**
@@ -718,18 +711,18 @@ namespace pc {
 			auto a32 = m[14];
 			auto a33 = m[15];
 
-			auto b00 = a00 * a11 - a01 * a10;
-			auto b01 = a00 * a12 - a02 * a10;
-			auto b02 = a00 * a13 - a03 * a10;
-			auto b03 = a01 * a12 - a02 * a11;
-			auto b04 = a01 * a13 - a03 * a11;
-			auto b05 = a02 * a13 - a03 * a12;
-			auto b06 = a20 * a31 - a21 * a30;
-			auto b07 = a20 * a32 - a22 * a30;
-			auto b08 = a20 * a33 - a23 * a30;
-			auto b09 = a21 * a32 - a22 * a31;
-			auto b10 = a21 * a33 - a23 * a31;
-			auto b11 = a22 * a33 - a23 * a32;
+			float b00 = a00 * a11 - a01 * a10;
+			float b01 = a00 * a12 - a02 * a10;
+			float b02 = a00 * a13 - a03 * a10;
+			float b03 = a01 * a12 - a02 * a11;
+			float b04 = a01 * a13 - a03 * a11;
+			float b05 = a02 * a13 - a03 * a12;
+			float b06 = a20 * a31 - a21 * a30;
+			float b07 = a20 * a32 - a22 * a30;
+			float b08 = a20 * a33 - a23 * a30;
+			float b09 = a21 * a32 - a22 * a31;
+			float b10 = a21 * a33 - a23 * a31;
+			float b11 = a22 * a33 - a23 * a32;
 
 			auto det = (b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06);
 			if (det == 0) {
@@ -756,7 +749,7 @@ namespace pc {
 			}
 
 
-			return this;
+			return *this;
 		}
 
 		/**
@@ -785,7 +778,7 @@ namespace pc {
 			dst[14] = src[14];
 			dst[15] = src[15];
 
-			return this;
+			return *this;
 		}
 
 		/**
@@ -816,7 +809,7 @@ namespace pc {
 			m[14] = 0;
 			m[15] = 1;
 
-			return this;
+			return *this;
 		}
 
 		/**
@@ -888,7 +881,7 @@ namespace pc {
 			m[14] = tz;
 			m[15] = 1;
 
-			return this;
+			return *this;
 		}
 
 		/**
@@ -929,7 +922,7 @@ namespace pc {
 			m[11] = m[14];
 			m[14] = tmp;
 
-			return this;
+			return *this;
 		}
 
 		Mat4 invertTo3x3(Mat3 res) {
@@ -963,7 +956,7 @@ namespace pc {
 
 			det =  m0 * a11 + m1 * a12 + m2 * a13;
 			if (det == 0) { // no inverse
-				return this;
+				return *this;
 			}
 
 			idet = 1 / det;
@@ -978,7 +971,7 @@ namespace pc {
 			r[7] = idet * a23;
 			r[8] = idet * a33;
 
-			return this;
+			return *this;
 		}
 
 		/**
@@ -1143,7 +1136,7 @@ namespace pc {
 			m[14] = 0;
 			m[15] = 1;
 
-			return this;
+			return *this;
 		}
 
 		/**

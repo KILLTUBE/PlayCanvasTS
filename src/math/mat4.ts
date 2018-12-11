@@ -207,36 +207,31 @@ namespace pc {
          * console.log("The result of the multiplication is: " r.toString());
          */
         mul2(lhs: Mat4, rhs: Mat4): Mat4 {
-            var a00, a01, a02, a03,
-                a10, a11, a12, a13,
-                a20, a21, a22, a23,
-                a30, a31, a32, a33,
-                b0, b1, b2, b3,
-                a = lhs.data,
-                b = rhs.data,
-                r = this.data;
+            var a = lhs.data;
+            var b = rhs.data;
+            var r = this.data;
 
-            a00 = a[0];
-            a01 = a[1];
-            a02 = a[2];
-            a03 = a[3];
-            a10 = a[4];
-            a11 = a[5];
-            a12 = a[6];
-            a13 = a[7];
-            a20 = a[8];
-            a21 = a[9];
-            a22 = a[10];
-            a23 = a[11];
-            a30 = a[12];
-            a31 = a[13];
-            a32 = a[14];
-            a33 = a[15];
+            var a00 = a[0];
+            var a01 = a[1];
+            var a02 = a[2];
+            var a03 = a[3];
+            var a10 = a[4];
+            var a11 = a[5];
+            var a12 = a[6];
+            var a13 = a[7];
+            var a20 = a[8];
+            var a21 = a[9];
+            var a22 = a[10];
+            var a23 = a[11];
+            var a30 = a[12];
+            var a31 = a[13];
+            var a32 = a[14];
+            var a33 = a[15];
 
-            b0 = b[0];
-            b1 = b[1];
-            b2 = b[2];
-            b3 = b[3];
+            var b0 = b[0];
+            var b1 = b[1];
+            var b2 = b[2];
+            var b3 = b[3];
             r[0]  = a00 * b0 + a10 * b1 + a20 * b2 + a30 * b3;
             r[1]  = a01 * b0 + a11 * b1 + a21 * b2 + a31 * b3;
             r[2]  = a02 * b0 + a12 * b1 + a22 * b2 + a32 * b3;
@@ -467,14 +462,12 @@ namespace pc {
          * var f = pc.Mat4().setFrustum(-2, 2, -1, 1, 1, 1000);
          */
         setFrustum(left: number, right: number, bottom: number, top: number, znear: number, zfar: number): Mat4 {
-            var temp1, temp2, temp3, temp4, r;
+            var temp1 = 2 * znear;
+            var temp2 = right - left;
+            var temp3 = top - bottom;
+            var temp4 = zfar - znear;
 
-            temp1 = 2 * znear;
-            temp2 = right - left;
-            temp3 = top - bottom;
-            temp4 = zfar - znear;
-
-            r = this.data;
+            var r = this.data;
             r[0] = temp1 / temp2;
             r[1] = 0;
             r[2] = 0;
