@@ -100,11 +100,11 @@ namespace pc {
 		 *
 		 * console.log("The result of the cloning is: " + q.toString());
 		 */
-		clone() {
+		Quat clone() {
 			return new pc.Quat(this->x, this->y, this->z, this->w);
 		}
 
-		conjugate() {
+		Quat conjugate() {
 			this->x *= -1;
 			this->y *= -1;
 			this->z *= -1;
@@ -124,7 +124,7 @@ namespace pc {
 		 * dst.copy(src, src);
 		 * console.log("The two quaternions are " + (src.equals(dst) ? "equal" : "different"));
 		 */
-		copy(Quat rhs) {
+		Quat copy(Quat rhs) {
 			this->x = rhs.x;
 			this->y = rhs.y;
 			this->z = rhs.z;
@@ -144,7 +144,7 @@ namespace pc {
 		 * auto b = new pc.Quat();
 		 * console.log("The two quaternions are " + (a.equals(b) ? "equal" : "different"));
 		 */
-		equals(Quat rhs) {
+		bool equals(Quat rhs) {
 			return ((this->x == rhs.x) && (this->y == rhs.y) && (this->z == rhs.z) && (this->w == rhs.w));
 		}
 
@@ -168,7 +168,7 @@ namespace pc {
 		 * // Should output [0, 1, 0]
 		 * console.log(v.toString());
 		 */
-		getAxisAngle(Vec3 axis) {
+		float getAxisAngle(Vec3 axis) {
 			auto rad = Math.acos(this->w) * 2;
 			auto s = Math.sin(rad / 2);
 			if (s !== 0) {
@@ -188,7 +188,7 @@ namespace pc {
 				axis.y = 0;
 				axis.z = 0;
 			}
-			return rad * pc.math.RAD_TO_DEG;
+			return rad * pc::math::RAD_TO_DEG;
 		}
 
 		/**
@@ -199,7 +199,7 @@ namespace pc {
 		 * @returns {pc.Vec3} The 3-dimensional vector holding the Euler angles that
 		 * correspond to the supplied quaternion.
 		 */
-		getEulerAngles(eulers?: Vec3) {
+		Vec3 getEulerAngles(eulers?: Vec3) {
 			auto x, y, z, qx, qy, qz, qw, a2;
 
 			eulers = (eulers == undefined) ? new pc.Vec3() : eulers;
@@ -212,11 +212,11 @@ namespace pc {
 			a2 = 2 * (qw * qy - qx * qz);
 			if (a2 <= -0.99999) {
 				x = 2 * Math.atan2(qx, qw);
-				y = -Math.PI / 2;
+				y = -M_PI / 2;
 				z = 0;
 			} else if (a2 >= 0.99999) {
 				x = 2 * Math.atan2(qx, qw);
-				y = Math.PI / 2;
+				y = M_PI / 2;
 				z = 0;
 			} else {
 				x = Math.atan2(2 * (qw * qx + qy * qz), 1 - 2 * (qx * qx + qy * qy));
@@ -224,7 +224,7 @@ namespace pc {
 				z = Math.atan2(2 * (qw * qz + qx * qy), 1 - 2 * (qy * qy + qz * qz));
 			}
 
-			return eulers.set(x, y, z).scale(pc.math.RAD_TO_DEG);
+			return eulers.set(x, y, z).scale(pc::math::RAD_TO_DEG);
 		}
 
 		/**
@@ -239,7 +239,7 @@ namespace pc {
 		 * // Invert in place
 		 * rot.invert();
 		 */
-		invert() {
+		Quat invert() {
 			return *this->conjugate().normalize();
 		}
 
@@ -254,7 +254,7 @@ namespace pc {
 		 * // Should output 5
 		 * console.log("The length of the quaternion is: " + len);
 		 */
-		length() {
+		float length() {
 			return Math.sqrt(this->x * this->x + this->y * this->y + this->z * this->z + this->w * this->w);
 		}
 
@@ -269,7 +269,7 @@ namespace pc {
 		 * // Should output 25
 		 * console.log("The length squared of the quaternion is: " + lenSq);
 		 */
-		lengthSq() {
+		float lengthSq() {
 			return *this->x * this->x + this->y * this->y + this->z * this->z + this->w * this->w;
 		}
 
@@ -289,7 +289,7 @@ namespace pc {
 		 *
 		 * console.log("The result of the multiplication is: " a.toString());
 		 */
-		mul(Quat rhs) {
+		Quat mul(Quat rhs) {
 			auto q1x, q1y, q1z, q1w, q2x, q2y, q2z, q2w;
 
 			q1x = this->x;
@@ -328,7 +328,7 @@ namespace pc {
 		 *
 		 * console.log("The result of the multiplication is: " r.toString());
 		 */
-		mul2(Quat lhs, Quat rhs) {
+		Quat mul2(Quat lhs, Quat rhs) {
 			auto q1x, q1y, q1z, q1w, q2x, q2y, q2z, q2w;
 
 			q1x = lhs.x;
@@ -362,7 +362,7 @@ namespace pc {
 		 * // Should output 0, 0, 0, 1
 		 * console.log("The result of the vector normalization is: " + v.toString());
 		 */
-		normalize() {
+		Quat normalize() {
 			auto len = this->length();
 			if (len == 0) {
 				this->x = this->y = this->z = 0;
@@ -394,7 +394,7 @@ namespace pc {
 		 * // Should output 1, 0, 0, 0
 		 * console.log("The result of the vector set is: " + q.toString());
 		 */
-		set(float x, float y, float z, float w) {
+		Quat set(float x, float y, float z, float w) {
 			this->x = x;
 			this->y = y;
 			this->z = z;
@@ -414,10 +414,10 @@ namespace pc {
 		 * auto q = new pc.Quat();
 		 * q.setFromAxisAngle(pc.Vec3.UP, 90);
 		 */
-		setFromAxisAngle(Vec3 axis, float angle) {
+		Quat setFromAxisAngle(Vec3 axis, float angle) {
 			auto sa, ca;
 
-			angle *= 0.5 * pc.math.DEG_TO_RAD;
+			angle *= 0.5 * pc::math::DEG_TO_RAD;
 
 			sa = Math.sin(angle);
 			ca = Math.cos(angle);
@@ -442,10 +442,10 @@ namespace pc {
 		 * auto q = new pc.Quat();
 		 * q.setFromEulerAngles(45, 90, 180);
 		 */
-		setFromEulerAngles(float ex, float ey, float ez) {
+		Quat setFromEulerAngles(float ex, float ey, float ez) {
 			auto sx, cx, sy, cy, sz, cz, halfToRad;
 
-			halfToRad = 0.5 * pc.math.DEG_TO_RAD;
+			halfToRad = 0.5 * pc::math::DEG_TO_RAD;
 			ex *= halfToRad;
 			ey *= halfToRad;
 			ez *= halfToRad;
@@ -480,7 +480,7 @@ namespace pc {
 		 * // Convert to a quaternion
 		 * auto q = new pc.Quat().setFromMat4(rot);
 		 */
-		setFromMat4(m_: Mat4) {
+		Quat setFromMat4(Mat4 m_) {
 			auto m00, m01, m02, m10, m11, m12, m20, m21, m22,
 				tr, s, rs, lx, ly, lz;
 
@@ -591,7 +591,7 @@ namespace pc {
 		 * result = new pc.Quat().slerp(q1, q2, 0.5); // Return the midpoint interpolant
 		 * result = new pc.Quat().slerp(q1, q2, 1);   // Return q2
 		 */
-		slerp(Quat lhs, Quat rhs, float alpha) {
+		Quat slerp(Quat lhs, Quat rhs, float alpha) {
 			// Algorithm sourced from:
 			// http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/
 			auto lx, ly, lz, lw, rx, ry, rz, rw;
@@ -665,7 +665,7 @@ namespace pc {
 		 *
 		 * auto tv = q.transformVector(v);
 		 */
-		transformVector(Vec3 vec, res?: Vec3) {
+		Vec3 transformVector(Vec3 vec, res?: Vec3) {
 			if (res == undefined) {
 				res = new pc.Vec3();
 			}
@@ -697,7 +697,7 @@ namespace pc {
 		 * // Should output '[0, 0, 0, 1]'
 		 * console.log(v.toString());
 		 */
-		toString() {
+		string toString() {
 			return '[' + this->x + ', ' + this->y + ', ' + this->z + ', ' + this->w + ']';
 		}
 	}

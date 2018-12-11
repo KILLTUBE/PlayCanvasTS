@@ -13,7 +13,7 @@ namespace pc {
 	 */
 	/*export*/ class CurveSet {
 		Curve curves[];
-		_float type; // enum
+		float _type; // enum
 
 		CurveSet() {
 			auto i;
@@ -50,7 +50,7 @@ namespace pc {
 		 * @param {Number} index The index of the curve to return
 		 * @returns {pc.Curve} The curve at the specified index
 		 */
-		get(float index) {
+		Curve get(float index) {
 			return *this->curves[index];
 		}
 
@@ -65,7 +65,7 @@ namespace pc {
 		 * to return the result.
 		 * @returns {Array} The interpolated curve values at the specified time
 		 */
-		value(float time, result?: float[]) {
+		float value(float time, result?: float[])[] {
 			auto length = this->curves.length;
 			result = result || [];
 			result.length = length;
@@ -83,7 +83,7 @@ namespace pc {
 		 * @description Returns a clone of the specified curve set object.
 		 * @returns {pc.CurveSet} A clone of the specified curve set
 		 */
-		clone() {
+		CurveSet clone() {
 			auto result = new pc.CurveSet();
 
 			result.curves = [];
@@ -96,7 +96,7 @@ namespace pc {
 			return result;
 		}
 
-		quantize(float precision) {
+		Float32Array quantize(float precision) {
 			precision = Math.max(precision, 2);
 
 			auto numCurves = this->curves.length;

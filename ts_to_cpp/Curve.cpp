@@ -8,25 +8,25 @@ namespace pc {
 	 * @name pc.CURVE_LINEAR
 	 * @description A linear interpolation scheme.
 	 */
-	/*export*/ const CURVE_LINEAR = 0;
+	/*export*/ const float CURVE_LINEAR = 0;
 	/**
 	 * @enum pc.CURVE
 	 * @name pc.CURVE_SMOOTHSTEP
 	 * @description A smooth step interpolation scheme.
 	 */
-	/*export*/ const CURVE_SMOOTHSTEP = 1;
+	/*export*/ const float CURVE_SMOOTHSTEP = 1;
 	/**
 	 * @enum pc.CURVE
 	 * @name pc.CURVE_CATMULL
 	 * @description A Catmull-Rom spline interpolation scheme.
 	 */
-	/*export*/ const CURVE_CATMULL = 2;
+	/*export*/ const float CURVE_CATMULL = 2;
 	/**
 	 * @enum pc.CURVE
 	 * @name pc.CURVE_CARDINAL
 	 * @description A cardinal spline interpolation scheme.
 	 */
-	/*export*/ const CURVE_CARDINAL = 3;
+	/*export*/ const float CURVE_CARDINAL = 3;
 
 	/**
 	 * @Curve
@@ -66,7 +66,7 @@ namespace pc {
 		 * @param {Number} value Value of new key
 		 * @returns {Number[]} [time, value] pair
 		 */
-		add(float time, float value) {
+		float add(float time, float value)[] {
 			auto keys = this->keys;
 			auto len = keys.length;
 			auto i = 0;
@@ -89,7 +89,7 @@ namespace pc {
 		 * @param {Number} index The index of the key to return
 		 * @returns {Number[]} The key at the specified index
 		 */
-		get(float index) {
+		float get(float index)[] {
 			return *this->keys[index];
 		}
 
@@ -98,7 +98,7 @@ namespace pc {
 		 * @name pc.Curve#sort
 		 * @description Sort keys by time.
 		 */
-		sort() {
+		void sort() {
 			this->keys.sort(function (float a[], float b[]) {
 				return a[0] - b[0];
 			});
@@ -111,7 +111,7 @@ namespace pc {
 		 * @param {Number} time The time at which to calculate the value
 		 * @returns {Number} The interpolated value
 		 */
-		value(float time) {
+		float value(float time) {
 			auto i, len;
 			auto keys = this->keys;
 
@@ -195,10 +195,10 @@ namespace pc {
 				return *this->_interpolateCardinal(p0, p1, p2, p3, interpolation, this->tension);
 			}
 
-			return pc.math.lerp(leftValue, rightValue, interpolation);
+			return pc::math::lerp(leftValue, rightValue, interpolation);
 		}
 
-		_interpolateHermite(float p0, float p1, float t0, float t1, float s) {
+		float _interpolateHermite(float p0, float p1, float t0, float t1, float s) {
 			auto s2 = s * s;
 			auto s3 = s * s * s;
 			auto h0 = 2 * s3 - 3 * s2 + 1;
@@ -209,18 +209,18 @@ namespace pc {
 			return p0 * h0 + p1 * h1 + t0 * h2 + t1 * h3;
 		}
 
-		_interpolateCardinal(float p0, float p1, float p2, float p3, float s, float t) {
+		float _interpolateCardinal(float p0, float p1, float p2, float p3, float s, float t) {
 			auto t0 = t * (p2 - p0);
 			auto t1 = t * (p3 - p1);
 
 			return *this->_interpolateHermite(p1, p2, t0, t1, s);
 		}
 
-		_interpolateCatmullRom(float p0, float p1, float p2, float p3, float s) {
+		float _interpolateCatmullRom(float p0, float p1, float p2, float p3, float s) {
 			return *this->_interpolateCardinal(p0, p1, p2, p3, s, 0.5);
 		}
 
-		closest(float time) {
+		float closest(float time)[] | null {
 			auto keys = this->keys;
 			auto length = keys.length;
 			auto min = 2;
@@ -245,14 +245,14 @@ namespace pc {
 		 * @description Returns a clone of the specified curve object.
 		 * @returns {pc.Curve} A clone of the specified curve
 		 */
-		clone() {
+		Curve clone() {
 			auto result = new pc.Curve();
 			result.keys = pc.extend(result.keys, this->keys);
 			result.type = this->type;
 			return result;
 		}
 
-		quantize(float precision) {
+		Float32Array quantize(float precision) {
 			precision = Math.max(precision, 2);
 
 			auto values = Float32Array(precision);

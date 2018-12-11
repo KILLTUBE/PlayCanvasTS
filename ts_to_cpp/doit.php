@@ -5,7 +5,10 @@
 		
 		$src = "#include \"polyfills.h\"\r\n\r\n" . $src;
 		$src = str_replace("'use strict'", "//'use strict'", $src);
+		
+		$src = str_replace("export function", "/*exxport function*/", $src);
 		$src = str_replace("export", "/*export*/", $src);
+		
 		$src = str_replace("this.", "this->", $src);
 		$src = str_replace("===", "==", $src);
 		$src = str_replace("var", "auto", $src);
@@ -13,12 +16,12 @@
 		
 		
 		//$src = preg_replace('/([a-zA-Z0-9]+): (Mat4)/', '$2 *$1', $src);
-		$src = preg_replace('/([a-zA-Z0-9]+): ([a-zA-Z0-9]+)/', '$2 $1', $src);
-		$src = preg_replace('/([a-zA-Z0-9]+): ([a-zA-Z0-9]+)/', '$2 $1', $src);
+		$src = preg_replace('/([a-zA-Z0-9_]+): ([a-zA-Z0-9_]+)/', '$2 $1', $src);
+		$src = preg_replace('/([a-zA-Z0-9_]+): ([a-zA-Z0-9_]+)/', '$2 $1', $src);
 		
 		// rewrite function signatures
 		//$src = preg_replace('/([a-zA-Z0-9]+)\((.*)\): (Mat4)/', '$3 *$1($2)', $src);
-		$src = preg_replace('/([a-zA-Z0-9]+)\((.*)\): ([a-zA-Z0-9]+)/', '$3 $1($2)', $src);
+		$src = preg_replace('/([a-zA-Z0-9_]+)\((.*)\): ([a-zA-Z0-9_]+)/', '$3 $1($2)', $src);
 		
 		
 		//$src = str_replace("lhs.data", "lhs->data", $src);
@@ -28,6 +31,13 @@
 		$src = str_replace("    ", "\t", $src);
 		$src = str_replace("return this", "return *this", $src);
 		$src = str_replace("boolean", "bool", $src);
+		$src = str_replace("Math.PI", "M_PI", $src);
+		$src = str_replace("pc.math.", "pc::math::", $src);
+		
+		if (strpos($src, "namespace pc.math") !== false) {
+			$src = str_replace("namespace pc.math", "namespace pc {\r\nnamespace math", $src);
+			$src .= "}";
+		}
 		
 		// C++ Deref bullshit
 		$src = str_replace("auto b0", "float b0", $src);

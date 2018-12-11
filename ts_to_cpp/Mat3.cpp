@@ -31,7 +31,7 @@ namespace pc {
 		 * auto dst = src.clone();
 		 * console.log("The two matrices are " + (src.equals(dst) ? "equal" : "different"));
 		 */
-		clone() {
+		Mat3 clone() {
 			return new pc.Mat3().copy(this);
 		}
 
@@ -47,7 +47,7 @@ namespace pc {
 		 * dst.copy(src);
 		 * console.log("The two matrices are " + (src.equals(dst) ? "equal" : "different"));
 		 */
-		copy(Mat3 rhs) {
+		Mat3 copy(Mat3 rhs) {
 			auto src = rhs.data;
 			auto dst = this->data;
 
@@ -75,7 +75,7 @@ namespace pc {
 		 * auto dst = new pc.Mat3();
 		 * dst.copy(src);
 		 */
-		set(any src) {
+		Mat3 set(any src) {
 			auto dst = this->data;
 
 			dst[0] = src[0];
@@ -102,7 +102,7 @@ namespace pc {
 		 * auto b = new pc.Mat3();
 		 * console.log("The two matrices are " + (a.equals(b) ? "equal" : "different"));
 		 */
-		equals(Mat3 rhs) {
+		bool equals(Mat3 rhs) {
 			auto l = this->data;
 			auto r = rhs.data;
 
@@ -126,7 +126,7 @@ namespace pc {
 		 * auto m = new pc.Mat3();
 		 * console.log("The matrix is " + (m.isIdentity() ? "identity" : "not identity"));
 		 */
-		isIdentity() {
+		bool isIdentity() {
 			auto m = this->data;
 			return ((m[0] == 1) &&
 					(m[1] == 0) &&
@@ -148,7 +148,7 @@ namespace pc {
 		 * m.setIdentity();
 		 * console.log("The matrix is " + (m.isIdentity() ? "identity" : "not identity"));
 		 */
-		setIdentity() {
+		Mat3 setIdentity() {
 			auto m = this->data;
 			m[0] = 1;
 			m[1] = 0;
@@ -175,7 +175,7 @@ namespace pc {
 		 * // Should output '[1, 0, 0, 0, 1, 0, 0, 0, 1]'
 		 * console.log(m.toString());
 		 */
-		toString() {
+		string toString() {
 			auto t = '[';
 			for (auto i = 0; i < 9; i++) {
 				t += this->data[i];
@@ -196,7 +196,7 @@ namespace pc {
 		 * // Transpose in place
 		 * m.transpose();
 		 */
-		transpose() {
+		Mat3 transpose() {
 			auto m = this->data;
 
 			auto tmp;

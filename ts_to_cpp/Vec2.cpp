@@ -42,7 +42,7 @@ namespace pc {
 		 * // Should output [30, 30]
 		 * console.log("The result of the addition is: " + a.toString());
 		 */
-		add(Vec2 rhs) {
+		Vec2 add(Vec2 rhs) {
 			this->x += rhs.x;
 			this->y += rhs.y;
 
@@ -66,7 +66,7 @@ namespace pc {
 		 *
 		 * console.log("The result of the addition is: " + r.toString());
 		 */
-		add2(Vec2 lhs, Vec2 rhs) {
+		Vec2 add2(Vec2 lhs, Vec2 rhs) {
 			this->x = lhs.x + rhs.x;
 			this->y = lhs.y + rhs.y;
 
@@ -83,7 +83,7 @@ namespace pc {
 		 * auto vclone = v.clone();
 		 * console.log("The result of the cloning is: " + vclone.toString());
 		 */
-		clone() {
+		Vec2 clone() {
 			return new Vec2().copy(this);
 		}
 
@@ -101,7 +101,7 @@ namespace pc {
 		 *
 		 * console.log("The two vectors are " + (dst.equals(src) ? "equal" : "different"));
 		 */
-		copy(Vec2 rhs) {
+		Vec2 copy(Vec2 rhs) {
 			this->x = rhs.x;
 			this->y = rhs.y;
 
@@ -120,7 +120,7 @@ namespace pc {
 		 * auto v1dotv2 = v1.dot(v2);
 		 * console.log("The result of the dot product is: " + v1dotv2);
 		 */
-		dot(Vec2 rhs) {
+		float dot(Vec2 rhs) {
 			return *this->x * rhs.x + this->y * rhs.y;
 		}
 
@@ -135,7 +135,7 @@ namespace pc {
 		 * auto b = new pc.Vec2(4, 5);
 		 * console.log("The two vectors are " + (a.equals(b) ? "equal" : "different"));
 		 */
-		equals(Vec2 rhs) {
+		bool equals(Vec2 rhs) {
 			return *this->x == rhs.x && this->y == rhs.y;
 		}
 
@@ -150,7 +150,7 @@ namespace pc {
 		 * // Should output 5
 		 * console.log("The length of the vector is: " + len);
 		 */
-		length() {
+		float length() {
 			return Math.sqrt(this->x * this->x + this->y * this->y);
 		}
 
@@ -165,7 +165,7 @@ namespace pc {
 		 * // Should output 25
 		 * console.log("The length squared of the vector is: " + len);
 		 */
-		lengthSq() {
+		float lengthSq() {
 			return *this->x * this->x + this->y * this->y;
 		}
 
@@ -188,7 +188,7 @@ namespace pc {
 		 * r.lerp(a, b, 0.5); // r is 5, 5
 		 * r.lerp(a, b, 1);   // r is equal to b
 		 */
-		lerp(Vec2 lhs, Vec2 rhs, float alpha) {
+		Vec2 lerp(Vec2 lhs, Vec2 rhs, float alpha) {
 			this->x = lhs.x + alpha * (rhs.x - lhs.x);
 			this->y = lhs.y + alpha * (rhs.y - lhs.y);
 
@@ -210,7 +210,7 @@ namespace pc {
 		 * // Should output 8, 15
 		 * console.log("The result of the multiplication is: " + a.toString());
 		 */
-		mul(Vec2 rhs) {
+		Vec2 mul(Vec2 rhs) {
 			this->x *= rhs.x;
 			this->y *= rhs.y;
 
@@ -234,7 +234,7 @@ namespace pc {
 		 * // Should output 8, 15
 		 * console.log("The result of the multiplication is: " + r.toString());
 		 */
-		mul2(Vec2 lhs, Vec2 rhs) {
+		Vec2 mul2(Vec2 lhs, Vec2 rhs) {
 			this->x = lhs.x * rhs.x;
 			this->y = lhs.y * rhs.y;
 
@@ -255,7 +255,7 @@ namespace pc {
 		 * // Should output 1, 0
 		 * console.log("The result of the vector normalization is: " + v.toString());
 		 */
-		normalize() {
+		Vec2 normalize() {
 			auto lengthSq = this->x * this->x + this->y * this->y;
 			if (lengthSq > 0) {
 				auto invLength = 1 / Math.sqrt(lengthSq);
@@ -285,7 +285,7 @@ namespace pc {
 		 * // Divide by 2
 		 * v.scale(0.5);
 		 */
-		scale(float scalar) {
+		Vec2 scale(float scalar) {
 			this->x *= scalar;
 			this->y *= scalar;
 
@@ -306,7 +306,7 @@ namespace pc {
 		 * // Should output 5, 10
 		 * console.log("The result of the vector set is: " + v.toString());
 		 */
-		set(float x, float y) {
+		Vec2 set(float x, float y) {
 			this->x = x;
 			this->y = y;
 
@@ -328,7 +328,7 @@ namespace pc {
 		 * // Should output [-10, -10]
 		 * console.log("The result of the addition is: " + a.toString());
 		 */
-		sub(Vec2 rhs) {
+		Vec2 sub(Vec2 rhs) {
 			this->x -= rhs.x;
 			this->y -= rhs.y;
 
@@ -352,7 +352,7 @@ namespace pc {
 		 * // Should output [-10, -10]
 		 * console.log("The result of the addition is: " + r.toString());
 		 */
-		sub2(Vec2 lhs, Vec2 rhs) {
+		Vec2 sub2(Vec2 lhs, Vec2 rhs) {
 			this->x = lhs.x - rhs.x;
 			this->y = lhs.y - rhs.y;
 
@@ -369,7 +369,7 @@ namespace pc {
 		 * // Should output '[20, 10]'
 		 * console.log(v.toString());
 		 */
-		toString() {
+		string toString() {
 			return '[' + this->x + ', ' + this->y + ']';
 		}
 	}

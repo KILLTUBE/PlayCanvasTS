@@ -512,10 +512,10 @@ namespace pc {
 			auto xmax, ymax;
 
 			if (!fovIsHorizontal) {
-				ymax = znear * Math.tan(fov * Math.PI / 360);
+				ymax = znear * Math.tan(fov * M_PI / 360);
 				xmax = ymax * aspect;
 			} else {
-				xmax = znear * Math.tan(fov * Math.PI / 360);
+				xmax = znear * Math.tan(fov * M_PI / 360);
 				ymax = xmax / aspect;
 			}
 
@@ -576,7 +576,7 @@ namespace pc {
 		Mat4 setFromAxisAngle(Vec3 axis, float angle) {
 			auto x, y, z, c, s, t, tx, ty, m;
 
-			angle *= pc.math.DEG_TO_RAD;
+			angle *= pc::math::DEG_TO_RAD;
 
 			x = axis.x;
 			y = axis.y;
@@ -1101,9 +1101,9 @@ namespace pc {
 		Mat4 setFromEulerAngles(float ex, float ey, float ez) {
 			auto s1, c1, s2, c2, s3, c3, m;
 
-			ex *= pc.math.DEG_TO_RAD;
-			ey *= pc.math.DEG_TO_RAD;
-			ez *= pc.math.DEG_TO_RAD;
+			ex *= pc::math::DEG_TO_RAD;
+			ey *= pc::math::DEG_TO_RAD;
+			ez *= pc::math::DEG_TO_RAD;
 
 			// Solution taken from http://en.wikipedia.org/wiki/Euler_angles#Matrix_orientation
 			s1 = Math.sin(-ex);
@@ -1166,7 +1166,7 @@ namespace pc {
 			m = this->data;
 
 			y = Math.asin(-m[2] / sx);
-			halfPi = Math.PI * 0.5;
+			halfPi = M_PI * 0.5;
 
 			if (y < halfPi) {
 				if (y > -halfPi) {
@@ -1183,7 +1183,7 @@ namespace pc {
 				x = Math.atan2(m[4] / sy, m[5] / sy);
 			}
 
-			return eulers.set(x, y, z).scale(pc.math.RAD_TO_DEG);
+			return eulers.set(x, y, z).scale(pc::math::RAD_TO_DEG);
 		}
 
 		/**

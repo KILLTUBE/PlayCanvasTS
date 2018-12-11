@@ -46,7 +46,7 @@ namespace pc {
 		 * // Should output [30, 30, 30]
 		 * console.log("The result of the addition is: " + a.toString());
 		 */
-		add(Vec3 rhs) {
+		Vec3 add(Vec3 rhs) {
 			this->x += rhs.x;
 			this->y += rhs.y;
 			this->z += rhs.z;
@@ -71,7 +71,7 @@ namespace pc {
 		 *
 		 * console.log("The result of the addition is: " + r.toString());
 		 */
-		add2(Vec3 lhs, Vec3 rhs) {
+		Vec3 add2(Vec3 lhs, Vec3 rhs) {
 			this->x = lhs.x + rhs.x;
 			this->y = lhs.y + rhs.y;
 			this->z = lhs.z + rhs.z;
@@ -89,7 +89,7 @@ namespace pc {
 		 * auto vclone = v.clone();
 		 * console.log("The result of the cloning is: " + vclone.toString());
 		 */
-		clone() {
+		Vec3 clone() {
 			return new Vec3().copy(this);
 		}
 
@@ -107,7 +107,7 @@ namespace pc {
 		 *
 		 * console.log("The two vectors are " + (dst.equals(src) ? "equal" : "different"));
 		 */
-		copy(Vec3 rhs) {
+		Vec3 copy(Vec3 rhs) {
 			this->x = rhs.x;
 			this->y = rhs.y;
 			this->z = rhs.z;
@@ -128,7 +128,7 @@ namespace pc {
 		 * // Should print the Z axis (i.e. [0, 0, 1])
 		 * console.log("The result of the cross product is: " + back.toString());
 		 */
-		cross(Vec3 lhs, Vec3 rhs) {
+		Vec3 cross(Vec3 lhs, Vec3 rhs) {
 			// Create temporary autoiables in case lhs or rhs are 'this'
 			auto lx = lhs.x;
 			auto ly = lhs.y;
@@ -156,7 +156,7 @@ namespace pc {
 		 * auto v1dotv2 = v1.dot(v2);
 		 * console.log("The result of the dot product is: " + v1dotv2);
 		 */
-		dot(Vec3 rhs) {
+		float dot(Vec3 rhs) {
 			return *this->x * rhs.x + this->y * rhs.y + this->z * rhs.z;
 		}
 
@@ -171,7 +171,7 @@ namespace pc {
 		 * auto b = new pc.Vec3(4, 5, 6);
 		 * console.log("The two vectors are " + (a.equals(b) ? "equal" : "different"));
 		 */
-		equals(Vec3 rhs) {
+		bool equals(Vec3 rhs) {
 			return *this->x == rhs.x && this->y == rhs.y && this->z == rhs.z;
 		}
 
@@ -186,7 +186,7 @@ namespace pc {
 		 * // Should output 5
 		 * console.log("The length of the vector is: " + len);
 		 */
-		length() {
+		float length() {
 			return Math.sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
 		}
 
@@ -201,7 +201,7 @@ namespace pc {
 		 * // Should output 25
 		 * console.log("The length squared of the vector is: " + len);
 		 */
-		lengthSq() {
+		float lengthSq() {
 			return *this->x * this->x + this->y * this->y + this->z * this->z;
 		}
 
@@ -224,7 +224,7 @@ namespace pc {
 		 * r.lerp(a, b, 0.5); // r is 5, 5, 5
 		 * r.lerp(a, b, 1);   // r is equal to b
 		 */
-		lerp(Vec3 lhs, Vec3 rhs, float alpha) {
+		Vec3 lerp(Vec3 lhs, Vec3 rhs, float alpha) {
 			this->x = lhs.x + alpha * (rhs.x - lhs.x);
 			this->y = lhs.y + alpha * (rhs.y - lhs.y);
 			this->z = lhs.z + alpha * (rhs.z - lhs.z);
@@ -247,7 +247,7 @@ namespace pc {
 		 * // Should output 8, 15, 24
 		 * console.log("The result of the multiplication is: " + a.toString());
 		 */
-		mul(Vec3 rhs) {
+		Vec3 mul(Vec3 rhs) {
 			this->x *= rhs.x;
 			this->y *= rhs.y;
 			this->z *= rhs.z;
@@ -272,7 +272,7 @@ namespace pc {
 		 * // Should output 8, 15, 24
 		 * console.log("The result of the multiplication is: " + r.toString());
 		 */
-		mul2(Vec3 lhs, Vec3 rhs) {
+		Vec3 mul2(Vec3 lhs, Vec3 rhs) {
 			this->x = lhs.x * rhs.x;
 			this->y = lhs.y * rhs.y;
 			this->z = lhs.z * rhs.z;
@@ -294,7 +294,7 @@ namespace pc {
 		 * // Should output 1, 0, 0, 0
 		 * console.log("The result of the vector normalization is: " + v.toString());
 		 */
-		normalize() {
+		Vec3 normalize() {
 			auto lengthSq = this->x * this->x + this->y * this->y + this->z * this->z;
 			if (lengthSq > 0) {
 				auto invLength = 1 / Math.sqrt(lengthSq);
@@ -321,7 +321,7 @@ namespace pc {
 		 * // Should output 5, 0, 0
 		 * console.log("The result of the vector projection is: " + v.toString());
 		 */
-		project(Vec3 rhs) {
+		Vec3 project(Vec3 rhs) {
 			auto a_dot_b = this->x * rhs.x + this->y * rhs.y + this->z * rhs.z;
 			auto b_dot_b = rhs.x * rhs.x + rhs.y * rhs.y + rhs.z * rhs.z;
 			auto s = a_dot_b / b_dot_b;
@@ -350,7 +350,7 @@ namespace pc {
 		 * // Divide by 2
 		 * v.scale(0.5);
 		 */
-		scale(float scalar) {
+		Vec3 scale(float scalar) {
 			this->x *= scalar;
 			this->y *= scalar;
 			this->z *= scalar;
@@ -373,7 +373,7 @@ namespace pc {
 		 * // Should output 5, 10, 20
 		 * console.log("The result of the vector set is: " + v.toString());
 		 */
-		set(float x, float y, float z) {
+		Vec3 set(float x, float y, float z) {
 			this->x = x;
 			this->y = y;
 			this->z = z;
@@ -396,7 +396,7 @@ namespace pc {
 		 * // Should output [-10, -10, -10]
 		 * console.log("The result of the addition is: " + a.toString());
 		 */
-		sub(Vec3 rhs) {
+		Vec3 sub(Vec3 rhs) {
 			this->x -= rhs.x;
 			this->y -= rhs.y;
 			this->z -= rhs.z;
@@ -421,7 +421,7 @@ namespace pc {
 		 * // Should output [-10, -10, -10]
 		 * console.log("The result of the addition is: " + r.toString());
 		 */
-		sub2(Vec3 lhs, Vec3 rhs) {
+		Vec3 sub2(Vec3 lhs, Vec3 rhs) {
 			this->x = lhs.x - rhs.x;
 			this->y = lhs.y - rhs.y;
 			this->z = lhs.z - rhs.z;
@@ -439,7 +439,7 @@ namespace pc {
 		 * // Should output '[20, 10, 5]'
 		 * console.log(v.toString());
 		 */
-		toString() {
+		string toString() {
 			return '[' + this->x + ', ' + this->y + ', ' + this->z + ']';
 		}
   
@@ -624,12 +624,12 @@ namespace pc {
 		public static Vec3 b = new Vec3;
 		public static Vec3 c = new Vec3;
 		// each function its own, so they don't collide
-		public static setLookAt_Vec3 x = new Vec3;
-		public static setLookAt_Vec3 y = new Vec3;
-		public static setLookAt_Vec3 z = new Vec3;
-		public static getScale_Vec3 x = new Vec3;
-		public static getScale_Vec3 y = new Vec3;
-		public static getScale_Vec3 z = new Vec3;
-		public static getEulerAngles_Vec3 scale = new Vec3;
+		public static Vec3 setLookAt_x = new Vec3;
+		public static Vec3 setLookAt_y = new Vec3;
+		public static Vec3 setLookAt_z = new Vec3;
+		public static Vec3 getScale_x = new Vec3;
+		public static Vec3 getScale_y = new Vec3;
+		public static Vec3 getScale_z = new Vec3;
+		public static Vec3 getEulerAngles_scale = new Vec3;
 	}	
 }
