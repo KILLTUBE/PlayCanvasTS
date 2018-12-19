@@ -1,5 +1,5 @@
-Object.assign(pc, function () {
-    var log = {
+namespace pc {
+    export namespace log {
         /**
          * @private
          * @function
@@ -7,9 +7,9 @@ Object.assign(pc, function () {
          * @description Write text to the console
          * @param {String} text The text to log.
          */
-        write: function (text) {
+        export function write(text: string): void {
             console.log(text);
-        },
+        }
 
         /**
          * @private
@@ -17,9 +17,9 @@ Object.assign(pc, function () {
          * @name pc.log.open
          * @description Starting logging to the console
          */
-        open: function () {
-            pc.log.write("Powered by PlayCanvas " + pc.version + " " + pc.revision);
-        },
+        export function open(): void {
+            write("Powered by PlayCanvas " + pc.version + " " + pc.revision);
+        }
 
         /**
          * @private
@@ -28,9 +28,9 @@ Object.assign(pc, function () {
          * @description Write text to the log preceded by 'INFO:'
          * @param {String} text The text to log.
          */
-        info: function (text) {
+        export function info(text: string): void {
             console.info("INFO:    " + text);
-        },
+        }
 
         /**
          * @private
@@ -39,9 +39,9 @@ Object.assign(pc, function () {
          * @description Write text to the log preceded by 'DEBUG:'
          * @param {String} text The text to log.
          */
-        debug: function (text) {
+        export function debug(text: string): void {
             console.debug("DEBUG:   " + text);
-        },
+        }
 
         /**
          * @private
@@ -50,9 +50,9 @@ Object.assign(pc, function () {
          * @description Write text to the log preceded by 'ERROR:'
          * @param {String} text The text to log.
          */
-        error: function (text) {
+        export function error(text: string): void {
             console.error("ERROR:   " + text);
-        },
+        }
 
         /**
          * @private
@@ -61,9 +61,9 @@ Object.assign(pc, function () {
          * @description Write text to the log preceded by 'WARNING:'
          * @param {String} text The text to log.
          */
-        warning: function (text) {
+        export function warning(text: string): void {
             console.warn("WARNING: " + text);
-        },
+        }
 
         /**
          * @private
@@ -72,10 +72,10 @@ Object.assign(pc, function () {
          * @description Write text to the log preceded by 'ALERT:' and pop up an alert dialog box with the text
          * @param {String} text The text to show in the alert.
          */
-        alert: function (text) {
+        export function alert(text: string): void {
             pc.log.write("ALERT:   " + text);
             alert(text); // eslint-disable-line no-alert
-        },
+        }
 
         /**
          * @private
@@ -85,27 +85,22 @@ Object.assign(pc, function () {
          * @param {Boolean} condition The condition to test.
          * @param {String} text The text to show if the condition is false.
          */
-        assert: function (condition, text) {
-            if (condition === false) {
+        export function assert(condition: boolean, text: string): void {
+            if (!condition) {
                 pc.log.write("ASSERT:  " + text);
             }
         }
-    };
-
-    return {
-        log: log
-    };
-}());
+    }
+}
 
 // Shortcuts to logging functions
 // ESLint disabled here because these vars may be accessed from other files
 // once all sources have been concatenated together and wrapped by the closure.
-/* eslint-disable no-unused-vars */
-var logINFO = pc.log.info;
-var logDEBUG = pc.log.debug;
-var logWARNING = pc.log.warning;
-var logERROR = pc.log.error;
+window.logINFO = pc.log.info;
+window.logDEBUG = pc.log.debug;
+window.logWARNING = pc.log.warning;
+window.logERROR = pc.log.error;
+window.logALERT = pc.log.alert;
+window.logASSERT = pc.log.assert;
 
-var logALERT = pc.log.alert;
-var logASSERT = pc.log.assert;
-/* eslint-enable no-unused-vars */
+// TODO: Remove these functions and use the properly namespaced pc.log functions
