@@ -1,23 +1,11 @@
-/**
- * @name pc.debug
- * @private
- * @namespace
- */
-pc.debug = (function () {
-    var table = null;
-    var row = null;
-    var title = null;
-    var field = null;
+namespace pc {
+    export namespace debug {
+        var table: HTMLTableElement | null = null;
+        var row: HTMLTableRowElement | null = null;
+        var title: HTMLTableCellElement | null = null;
+        var field: HTMLTableCellElement | null = null;
 
-    return {
-        /**
-         * @private
-         * @function
-         * @name pc.debug.display
-         * @description Display an object and its data in a table on the page.
-         * @param {Object} data The object to display.
-         */
-        display: function (data) {
+        export function display(data: any): void {
             function init() {
                 table = document.createElement('table');
                 row = document.createElement('tr');
@@ -36,19 +24,23 @@ pc.debug = (function () {
                 init();
             }
 
-            table.innerHTML = '';
-            for (var key in data) {
-                var r = row.cloneNode();
-                var t = title.cloneNode();
-                var f = field.cloneNode();
+            table!.innerHTML = '';
+            var keys: string[] = Object.keys(data);
+            var key: string;
+            for (var i = 0; i < keys.length; i++) {
+                key = keys[i];
+
+                var r = row!.cloneNode();
+                var t = title!.cloneNode();
+                var f = field!.cloneNode();
 
                 t.textContent = key;
                 f.textContent = data[key];
 
                 r.appendChild(t);
                 r.appendChild(f);
-                table.appendChild(r);
+                table!.appendChild(r);
             }
         }
-    };
-}());
+    }
+}

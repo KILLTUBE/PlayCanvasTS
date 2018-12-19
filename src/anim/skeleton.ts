@@ -54,7 +54,7 @@ namespace pc {
 
       function addInterpolatedKeys(node: GraphNode): void {
         var interpKey = new InterpolatedKey();
-        interpKey._name = node._name;
+        interpKey._name = node.name;
         self._interpolatedKeys.push(interpKey);
         self._interpolatedKeyDict[node.name] = interpKey;
         self._currKeyIndices[node.name] = 0;
