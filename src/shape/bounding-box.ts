@@ -1,4 +1,4 @@
-Object.assign(pc, function () {
+namespace pc {
     var tmpVecA = new pc.Vec3();
     var tmpVecB = new pc.Vec3();
     var tmpVecC = new pc.Vec3();
@@ -13,14 +13,18 @@ Object.assign(pc, function () {
      * @param {pc.Vec3} [center] Center of box. The constructor takes a reference of this parameter.
      * @param {pc.Vec3} [halfExtents] Half the distance across the box in each axis. The constructor takes a reference of this parameter.
      */
-    var BoundingBox = function BoundingBox(center, halfExtents) {
-        this.center = center || new pc.Vec3(0, 0, 0);
-        this.halfExtents = halfExtents || new pc.Vec3(0.5, 0.5, 0.5);
-        this._min = new pc.Vec3();
-        this._max = new pc.Vec3();
-    };
+    export class BoundingBox {
+        center: Vec3;
+        halfExtents: Vec3;
+        _min: Vec3;
+        _max: Vec3;
 
-    Object.assign(BoundingBox.prototype, {
+        constructor(center: Vec3, halfExtents: Vec3) {
+            this.center = center || new pc.Vec3(0, 0, 0);
+            this.halfExtents = halfExtents || new pc.Vec3(0.5, 0.5, 0.5);
+            this._min = new pc.Vec3();
+            this._max = new pc.Vec3();
+        }
 
         /**
          * @function
@@ -28,7 +32,7 @@ Object.assign(pc, function () {
          * @description Combines two bounding boxes into one, enclosing both.
          * @param {pc.BoundingBox} other Bounding box to add.
          */
-        add: function (other) {
+        add(other: BoundingBox): void {
             var tc = this.center;
             var tcx = tc.x;
             var tcy = tc.y;
@@ -72,17 +76,17 @@ Object.assign(pc, function () {
             th.x = (tmaxx - tminx) * 0.5;
             th.y = (tmaxy - tminy) * 0.5;
             th.z = (tmaxz - tminz) * 0.5;
-        },
+        }
 
-        copy: function (src) {
+        copy(src: BoundingBox) {
             this.center.copy(src.center);
             this.halfExtents.copy(src.halfExtents);
-            this.type = src.type;
-        },
+            //this.type = src.type;
+        }
 
-        clone: function () {
+        clone() {
             return new pc.BoundingBox(this.center.clone(), this.halfExtents.clone());
-        },
+        }
 
         /**
          * @function
@@ -91,7 +95,7 @@ Object.assign(pc, function () {
          * @param {pc.BoundingBox} other Bounding box to test against.
          * @returns {Boolean} True if there is an intersection.
          */
-        intersects: function (other) {
+        intersects(other: BoundingBox) {
             var aMax = this.getMax();
             var aMin = this.getMin();
             var bMax = other.getMax();
@@ -100,9 +104,9 @@ Object.assign(pc, function () {
             return (aMin.x <= bMax.x) && (aMax.x >= bMin.x) &&
                    (aMin.y <= bMax.y) && (aMax.y >= bMin.y) &&
                    (aMin.z <= bMax.z) && (aMax.z >= bMin.z);
-        },
+        }
 
-        _intersectsRay: function (ray, point) {
+        _intersectsRay(ray: Ray, point: Vec3) {
             var tMin = tmpVecA.copy(this.getMin()).sub(ray.origin);
             var tMax = tmpVecB.copy(this.getMax()).sub(ray.origin);
             var dir = ray.direction;
@@ -142,9 +146,9 @@ Object.assign(pc, function () {
                 point.copy(ray.direction).scale(maxMin).add(ray.origin);
 
             return intersects;
-        },
+        }
 
-        _fastIntersectsRay: function (ray) {
+        _fastIntersectsRay(ray: Ray): boolean {
             var diff = tmpVecA;
             var cross = tmpVecB;
             var prod = tmpVecC;
@@ -180,7 +184,7 @@ Object.assign(pc, function () {
                 return false;
 
             return true;
-        },
+        }
 
         /**
          * @function
@@ -190,18 +194,18 @@ Object.assign(pc, function () {
          * @param {pc.Vec3} [point] If there is an intersection, the intersection point will be copied into here.
          * @returns {Boolean} True if there is an intersection.
          */
-        intersectsRay: function (ray, point) {
+        intersectsRay(ray: Ray, point: Vec3): boolean {
             if (point) {
                 return this._intersectsRay(ray, point);
             }
 
             return this._fastIntersectsRay(ray);
-        },
+        }
 
-        setMinMax: function (min, max) {
+        setMinMax(min: Vec3, max: Vec3): void {
             this.center.add2(max, min).scale(0.5);
             this.halfExtents.sub2(max, min).scale(0.5);
-        },
+        }
 
         /**
          * @function
@@ -209,9 +213,9 @@ Object.assign(pc, function () {
          * @description Return the minimum corner of the AABB.
          * @returns {pc.Vec3} minimum corner.
          */
-        getMin: function () {
+        getMin() {
             return this._min.copy(this.center).sub(this.halfExtents);
-        },
+        }
 
         /**
          * @function
@@ -219,9 +223,9 @@ Object.assign(pc, function () {
          * @description Return the maximum corner of the AABB.
          * @returns {pc.Vec3} maximum corner.
          */
-        getMax: function () {
+        getMax() {
             return this._max.copy(this.center).add(this.halfExtents);
-        },
+        }
 
         /**
          * @function
@@ -230,7 +234,7 @@ Object.assign(pc, function () {
          * @param {pc.Vec3} point Point to test.
          * @returns {Boolean} true if the point is inside the AABB and false otherwise.
          */
-        containsPoint: function (point) {
+        containsPoint(point: Vec3): boolean {
             var min = this.getMin();
             var max = this.getMax();
 
@@ -241,7 +245,7 @@ Object.assign(pc, function () {
             }
 
             return true;
-        },
+        }
 
         /**
          * @function
@@ -251,22 +255,22 @@ Object.assign(pc, function () {
          * @param {pc.BoundingBox} aabb Box to transform and enclose
          * @param {pc.Mat4} m Transformation matrix to apply to source AABB.
          */
-        setFromTransformedAabb: function (aabb, m) {
+        setFromTransformedAabb(aabb: BoundingBox, m: Mat4): void {
             var bc = this.center;
             var br = this.halfExtents;
             var ac = aabb.center;
             var ar = aabb.halfExtents;
 
-            m = m.data;
-            var mx0 = m[0];
-            var mx1 = m[4];
-            var mx2 = m[8];
-            var my0 = m[1];
-            var my1 = m[5];
-            var my2 = m[9];
-            var mz0 = m[2];
-            var mz1 = m[6];
-            var mz2 = m[10];
+            var m_data = m.data;
+            var mx0 = m_data[0];
+            var mx1 = m_data[4];
+            var mx2 = m_data[8];
+            var my0 = m_data[1];
+            var my1 = m_data[5];
+            var my2 = m_data[9];
+            var mz0 = m_data[2];
+            var mz1 = m_data[6];
+            var mz2 = m_data[10];
 
             var mx0a = Math.abs(mx0);
             var mx1a = Math.abs(mx1);
@@ -279,9 +283,9 @@ Object.assign(pc, function () {
             var mz2a = Math.abs(mz2);
 
             bc.set(
-                m[12] + mx0 * ac.x + mx1 * ac.y + mx2 * ac.z,
-                m[13] + my0 * ac.x + my1 * ac.y + my2 * ac.z,
-                m[14] + mz0 * ac.x + mz1 * ac.y + mz2 * ac.z
+                m_data[12] + mx0 * ac.x + mx1 * ac.y + mx2 * ac.z,
+                m_data[13] + my0 * ac.x + my1 * ac.y + my2 * ac.z,
+                m_data[14] + mz0 * ac.x + mz1 * ac.y + mz2 * ac.z
             );
 
             br.set(
@@ -289,9 +293,9 @@ Object.assign(pc, function () {
                 my0a * ar.x + my1a * ar.y + my2a * ar.z,
                 mz0a * ar.x + mz1a * ar.y + mz2a * ar.z
             );
-        },
+        }
 
-        compute: function (vertices) {
+        compute(vertices: number[]): void {
             var min = tmpVecA.set(vertices[0], vertices[1], vertices[2]);
             var max = tmpVecB.set(vertices[0], vertices[1], vertices[2]);
             var numVerts = vertices.length / 3;
@@ -309,7 +313,7 @@ Object.assign(pc, function () {
             }
 
             this.setMinMax(min, max);
-        },
+        }
 
         /**
          * @function
@@ -318,16 +322,16 @@ Object.assign(pc, function () {
          * @param {pc.BoundingSphere} sphere Bounding Sphere to test.
          * @returns {Boolean} true if the Bounding Sphere is overlapping, enveloping, or inside the AABB and false otherwise.
          */
-        intersectsBoundingSphere: function (sphere) {
+        intersectsBoundingSphere(sphere: BoundingSphere): boolean {
             var sq = this._distanceToBoundingSphereSq(sphere);
             if (sq <= sphere.radius * sphere.radius) {
                 return true;
             }
 
             return false;
-        },
+        }
 
-        _distanceToBoundingSphereSq: function (sphere) {
+        _distanceToBoundingSphereSq(sphere: BoundingSphere): number {
             var boxMin = this.getMin();
             var boxMax = this.getMax();
 
@@ -356,9 +360,5 @@ Object.assign(pc, function () {
 
             return sq;
         }
-    });
-
-    return {
-        BoundingBox: BoundingBox
-    };
-}());
+    }
+}

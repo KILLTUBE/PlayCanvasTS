@@ -11,11 +11,7 @@
 ../src/core/object-pool.js
 ../src/core/platform.js
 ../src/core/indexed-list.js
-../src/shape/bounding-box.js
-../src/shape/bounding-sphere.js
 ../src/shape/frustum.js
-../src/shape/plane.js
-../src/shape/oriented-box.js
 ../src/graphics/graphics.js
 ../src/graphics/scope-id.js
 ../src/graphics/scope-space.js

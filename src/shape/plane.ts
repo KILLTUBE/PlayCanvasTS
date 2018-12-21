@@ -1,4 +1,4 @@
-Object.assign(pc, function () {
+namespace pc {
     var tmpVecA = new pc.Vec3();
 
     /**
@@ -10,12 +10,14 @@ Object.assign(pc, function () {
      * @param {pc.Vec3} [point] Point position on the plane. The constructor takes a reference of this parameter.
      * @param {pc.Vec3} [normal] Normal of the plane. The constructor takes a reference of this parameter.
      */
-    var Plane = function Plane(point, normal) {
-        this.normal = normal || new pc.Vec3(0, 0, 1);
-        this.point = point || new pc.Vec3(0, 0, 0);
-    };
-
-    Object.assign(Plane.prototype, {
+    export class Plane {
+        normal: Vec3;
+        point: Vec3;
+        constructor(point: Vec3, normal: Vec3) {
+            this.normal = normal || new pc.Vec3(0, 0, 1);
+            this.point = point || new pc.Vec3(0, 0, 0);
+        }
+    
         /**
          * @function
          * @name pc.Plane#intersectsLine
@@ -25,7 +27,7 @@ Object.assign(pc, function () {
          * @param {pc.Vec3} [point] If there is an intersection, the intersection point will be copied into here.
          * @returns {Boolean} True if there is an intersection.
          */
-        intersectsLine: function (start, end, point) {
+        intersectsLine(start: Vec3, end: Vec3, point: Vec3) {
             var d = -this.normal.dot(this.point);
             var d0 = this.normal.dot(start) + d;
             var d1 = this.normal.dot(end) + d;
@@ -36,7 +38,7 @@ Object.assign(pc, function () {
                 point.lerp(start, end, t);
 
             return intersects;
-        },
+        }
 
         /**
          * @function
@@ -46,7 +48,7 @@ Object.assign(pc, function () {
          * @param {pc.Vec3} [point] If there is an intersection, the intersection point will be copied into here
          * @returns {Boolean} True if there is an intersection
          */
-        intersectsRay: function (ray, point) {
+        intersectsRay(ray: Ray, point: Vec3) {
             var pointToOrigin = tmpVecA.sub2(this.point, ray.origin);
             var t = this.normal.dot(pointToOrigin) / this.normal.dot(ray.direction);
             var intersects = t >= 0;
@@ -56,9 +58,5 @@ Object.assign(pc, function () {
 
             return intersects;
         }
-    });
-
-    return {
-        Plane: Plane
-    };
-}());
+    }
+}

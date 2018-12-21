@@ -1,4 +1,4 @@
-Object.assign(pc, function () {
+namespace pc {
     var tmpVecA = new pc.Vec3();
     var tmpVecB = new pc.Vec3();
     var tmpVecC = new pc.Vec3();
@@ -15,19 +15,22 @@ Object.assign(pc, function () {
      * @param {pc.Vec3} [center] The world space coordinate marking the center of the sphere. The constructor takes a reference of this parameter.
      * @param {Number} [radius] The radius of the bounding sphere. Defaults to 0.5.
      */
-    function BoundingSphere(center, radius) {
-        this.center = center || new pc.Vec3(0, 0, 0);
-        this.radius = radius === undefined ? 0.5 : radius;
-    }
+    export class BoundingSphere {
+        center: Vec3;
+        radius: number;
 
-    Object.assign(BoundingSphere.prototype, {
-        containsPoint: function (point) {
+        constructor(center?: Vec3, radius?: number) {
+            this.center = center || new pc.Vec3(0, 0, 0);
+            this.radius = radius === undefined ? 0.5 : radius;
+        }
+
+        containsPoint(point: Vec3): boolean {
             var lenSq = tmpVecA.sub2(point, this.center).lengthSq();
             var r = this.radius;
             return lenSq < r * r;
-        },
+        }
 
-        compute: function (vertices) {
+        compute(vertices: number[]): void {
             var i;
             var numVerts = vertices.length / 3;
 
@@ -40,7 +43,7 @@ Object.assign(pc, function () {
 
             for (i = 0; i < numVerts; i++) {
                 vertex.set(vertices[i * 3], vertices[i * 3 + 1], vertices[i * 3 + 2]);
-                sum.addSelf(vertex);
+                sum.add(vertex);
 
                 // apply a part-result to avoid float-overflows
                 if (i % 100 === 0) {
@@ -68,7 +71,7 @@ Object.assign(pc, function () {
             }
 
             this.radius = Math.sqrt(maxDistSq);
-        },
+        }
 
         /**
          * @function
@@ -78,14 +81,14 @@ Object.assign(pc, function () {
          * @param {pc.Vec3} [point] If there is an intersection, the intersection point will be copied into here.
          * @returns {Boolean} True if there is an intersection.
          */
-        intersectsRay: function (ray, point) {
+        intersectsRay(ray: Ray, point: Vec3): boolean {
             var m = tmpVecA.copy(ray.origin).sub(this.center);
             var b = m.dot(tmpVecB.copy(ray.direction).normalize());
             var c = m.dot(m) - this.radius * this.radius;
 
             // exit if ray's origin outside of sphere (c > 0) and ray pointing away from s (b > 0)
             if (c > 0 && b > 0)
-                return null;
+                return false;
 
             var discr = b * b - c;
             // a negative discriminant corresponds to ray missing sphere
@@ -100,7 +103,7 @@ Object.assign(pc, function () {
                 point.copy(ray.direction).scale(t).add(ray.origin);
 
             return true;
-        },
+        }
 
         /**
          * @function
@@ -109,7 +112,7 @@ Object.assign(pc, function () {
          * @param {pc.BoundingSphere} sphere Bounding Sphere to test.
          * @returns {Boolean} true if the Bounding Sphere is overlapping, enveloping, or inside this Bounding Sphere and false otherwise.
          */
-        intersectsBoundingSphere: function (sphere) {
+        intersectsBoundingSphere(sphere: BoundingSphere): boolean {
             tmpVecA.sub2(sphere.center, this.center);
             var totalRadius = sphere.radius + this.radius;
             if (tmpVecA.lengthSq() <= totalRadius * totalRadius) {
@@ -118,9 +121,5 @@ Object.assign(pc, function () {
 
             return false;
         }
-    });
-
-    return {
-        BoundingSphere: BoundingSphere
-    };
-}());
+    }
+}
