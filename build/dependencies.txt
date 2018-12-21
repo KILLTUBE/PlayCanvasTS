@@ -15,7 +15,6 @@
 ../src/shape/bounding-sphere.js
 ../src/shape/frustum.js
 ../src/shape/plane.js
-../src/shape/ray.js
 ../src/shape/oriented-box.js
 ../src/graphics/graphics.js
 ../src/graphics/scope-id.js

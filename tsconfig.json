@@ -59,8 +59,20 @@
   "include": [
     "./src/anim/*",
     "./src/asset/*",
+    "./src/audio/*",
     "./src/core/*",
+    "./src/framework/*",
+    "./src/graphics/*",
+    "./src/input/*",
     "./src/math/*",
+    "./src/net/*",
+    "./src/polyfill/*",
+    "./src/resources/*",
+    "./src/scene/*",
+    "./src/script/*",
+    "./src/shape/*",
+    "./src/sound/*",
+    "./src/vr/*"
   ],
   //"files": [
   //  "./src/core/core.ts",

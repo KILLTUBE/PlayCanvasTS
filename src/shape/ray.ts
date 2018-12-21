@@ -1,4 +1,4 @@
-Object.assign(pc, function () {
+namespace pc {
     /**
      * @constructor
      * @name pc.Ray
@@ -13,12 +13,13 @@ Object.assign(pc, function () {
      * @param {pc.Vec3} [direction] The direction of the ray. The constructor takes a reference of this parameter.
      * Defaults to a direction down the world negative Z axis (0, 0, -1).
      */
-    var Ray = function Ray(origin, direction) {
-        this.origin = origin || new pc.Vec3(0, 0, 0);
-        this.direction = direction || new pc.Vec3(0, 0, -1);
-    };
+    export class Ray  {
+        origin: Vec3;
+        direction: Vec3;
 
-    return {
-        Ray: Ray
+        constructor(origin: Vec3, direction: Vec3) {
+            this.origin = origin || new pc.Vec3(0, 0, 0);
+            this.direction = direction || new pc.Vec3(0, 0, -1);
+        }
     };
-}());
+}
