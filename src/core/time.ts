@@ -54,7 +54,6 @@ namespace pc {
      */
     export const now: () => number =
         window.performance && window.performance.timing && window.performance.now
-            ? window.performance.now
+            ? window.performance.now.bind(window.performance)
             : Date.now;
 }
-
