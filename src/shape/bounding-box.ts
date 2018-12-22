@@ -336,7 +336,7 @@ namespace pc {
             var boxMax = this.getMax();
 
             var sq = 0;
-            var axis = ['x', 'y', 'z'];
+            var axis: ("x" | "y" | "z")[] = ['x', 'y', 'z'];
 
             for (var i = 0; i < 3; ++i) {
                 var out = 0;

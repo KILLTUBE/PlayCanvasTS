@@ -17,8 +17,6 @@ namespace pc {
         y: number;
         z: number;
 
-        [index: string]: number;
-
         constructor(x?: any, y?: number, z?: number) {
             if (x && x.length === 3) {
                 this.x = x[0];
