@@ -18,11 +18,17 @@
 namespace pc {
     export namespace events {
 
+
+        interface IEventCallback {
+            (...props: any[]): void;
+            once?: boolean;
+        }
+
         export interface IEvents {
-            on(this: IEvents, name: string, callback: (...props: any[]) => void, scope: any): void;
-            off(this: IEvents, name: string, callback: (...props: any[]) => void, scope: any): void;
+            on(this: IEvents, name: string, callback: IEventCallback, scope: any): void;
+            off(this: IEvents, name: string, callback: IEventCallback, scope: any): void;
             fire(this: IEvents, name: string, arg1?: any, arg2?: any, arg3?: any, arg4?: any, arg5?: any, arg6?: any, arg7?: any, arg8?: any): void;
-            once(this: IEvents, name: string, callback: (...args: any[]) => void, scope: any): void;
+            once(this: IEvents, name: string, callback: IEventCallback, scope: any): void;
             hasEvent(name: string): boolean;
             _callbackActive: any;
             _callbacks: any;
@@ -62,7 +68,7 @@ namespace pc {
          * });
          * obj.fire('test', 1, 2); // prints 3 to the console
          */
-        export function on<T extends IEvents>(this: T, name: string, callback: (...props: any[]) => void, scope: any): T {
+        export function on<T extends IEvents>(this: T, name: string, callback: IEventCallback, scope: any): T {
             if (!name || typeof name !== 'string' || !callback)
                 return this;
 
@@ -104,7 +110,7 @@ namespace pc {
          * obj.off('test', handler); // Removes all handler functions, called 'test'
          * obj.off('test', handler, this); // Removes all hander functions, called 'test' with scope this
          */
-        export function off<T extends IEvents>(this: T, name: string, callback: (...props: any[]) => void, scope: any): T {
+        export function off<T extends IEvents>(this: T, name: string, callback: IEventCallback, scope: any): T {
             if (!this._callbacks)
                 return this;
 
@@ -223,7 +229,7 @@ namespace pc {
          * obj.fire('test', 1, 2); // prints 3 to the console
          * obj.fire('test', 1, 2); // not going to get handled
          */
-        export function once<T extends IEvents>(this: T, name: string, callback: (...args: any[]) => void, scope: any): T {
+        export function once<T extends IEvents>(this: T, name: string, callback: EventCallback, scope: any): T {
             callback.once = true;
             this.on(name, callback, scope);
             return this;
