@@ -11,7 +11,6 @@
 ../src/core/object-pool.js
 ../src/core/platform.js
 ../src/core/indexed-list.js
-../src/shape/frustum.js
 ../src/graphics/graphics.js
 ../src/graphics/scope-id.js
 ../src/graphics/scope-space.js

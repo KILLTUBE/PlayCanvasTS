@@ -1,4 +1,4 @@
-Object.assign(pc, function () {
+namespace pc {
     var viewProj = new pc.Mat4();
 
     /**
@@ -14,18 +14,21 @@ Object.assign(pc, function () {
      * @param {pc.Mat4} projectionMatrix The projection matrix describing the shape of the frustum.
      * @param {pc.Mat4} viewMatrix The inverse of the world transformation matrix for the frustum.
      */
-    var Frustum = function Frustum(projectionMatrix, viewMatrix) {
-        projectionMatrix = projectionMatrix || new pc.Mat4().setPerspective(90, 16 / 9, 0.1, 1000);
-        viewMatrix = viewMatrix || new pc.Mat4();
+    export class Frustum {
+        planes: number[][];
 
-        this.planes = [];
-        for (var i = 0; i < 6; i++)
-            this.planes[i] = [];
+        constructor(projectionMatrix: Mat4, viewMatrix: Mat4) {
+            projectionMatrix = projectionMatrix || new pc.Mat4().setPerspective(90, 16 / 9, 0.1, 1000);
+            viewMatrix = viewMatrix || new pc.Mat4();
 
-        this.update(projectionMatrix, viewMatrix);
-    };
+            this.planes = [];
+            for (var i = 0; i < 6; i++)
+                this.planes[i] = [];
 
-    Object.assign(Frustum.prototype, {
+            this.update(projectionMatrix, viewMatrix);
+        }
+
+    
         /**
          * @function
          * @name pc.Frustum#update
@@ -33,7 +36,7 @@ Object.assign(pc, function () {
          * @param {pc.Mat4} projectionMatrix The projection matrix describing the shape of the frustum.
          * @param {pc.Mat4} viewMatrix The inverse of the world transformation matrix for the frustum.
          */
-        update: function (projectionMatrix, viewMatrix) {
+        update(projectionMatrix: Mat4, viewMatrix: Mat4): void {
             viewProj.mul2(projectionMatrix, viewMatrix);
             var vpm = viewProj.data;
 
@@ -108,7 +111,7 @@ Object.assign(pc, function () {
             this.planes[5][1] /= t;
             this.planes[5][2] /= t;
             this.planes[5][3] /= t;
-        },
+        }
 
         /**
          * @function
@@ -118,7 +121,7 @@ Object.assign(pc, function () {
          * @param {pc.Vec3} point The point to test
          * @returns {Boolean} true if the point is inside the frustum, false otherwise
          */
-        containsPoint: function (point) {
+        containsPoint(point: Vec3): boolean {
             for (var p = 0; p < 6; p++)
                 if (this.planes[p][0] * point.x +
                     this.planes[p][1] * point.y +
@@ -126,7 +129,7 @@ Object.assign(pc, function () {
                     this.planes[p][3] <= 0)
                     return false;
             return true;
-        },
+        }
 
         /**
          * @function
@@ -139,7 +142,7 @@ Object.assign(pc, function () {
          * @returns {Number} 0 if the bounding sphere is outside the frustum, 1 if it intersects the frustum and 2 if
          * it is contained by the frustum
          */
-        containsSphere: function (sphere) {
+        containsSphere(sphere: BoundingSphere): number {
             var c = 0;
             var d;
             var p;
@@ -163,9 +166,5 @@ Object.assign(pc, function () {
 
             return (c === 6) ? 2 : 1;
         }
-    });
-
-    return {
-        Frustum: Frustum
-    };
-}());
+    }
+}
