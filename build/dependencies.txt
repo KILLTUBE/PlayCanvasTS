@@ -7,7 +7,6 @@
 ../src/core/uri.js
 ../src/core/path.js
 ../src/core/string.js
-../src/core/tags.js
 ../src/core/object-pool.js
 ../src/core/platform.js
 ../src/core/indexed-list.js
@@ -40,7 +39,6 @@
 ../src/graphics/post-effect.js
 ../src/scene/scene.js
 ../src/scene/forward-renderer.js
-../src/scene/graph-node.js
 ../src/scene/camera.js
 ../src/scene/light.js
 ../src/scene/materials/material.js
@@ -65,8 +63,6 @@
 ../src/scene/sync-queue.js
 ../src/scene/texture-atlas.js
 ../src/scene/stencil-parameters.js
-../src/anim/animation.js
-../src/anim/skeleton.js
 ../src/sound/manager.js
 ../src/sound/sound.js
 ../src/sound/listener.js
@@ -173,7 +169,6 @@
 ../src/framework/components/zone/component.js
 ../src/framework/components/zone/system.js
 ../src/framework/components/zone/data.js
-../src/framework/entity.js
 ../src/framework/utils/entity-reference.js
 ../src/framework/utils/sorted-loop-array.js
 ../src/resources/loader.js

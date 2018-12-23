@@ -1,25 +1,42 @@
-Object.assign(pc, (function () {
-    var TagsCache = function (key) {
-        this._index = { };
-        this._key = key || null;
-    };
+namespace pc {
+    class TagsIndex extends Object {
+        
+        //list: TagsIndex;
+        //constructor() {
+            //super();
+        //}
+        indexOf(item: any) {
 
-    Object.assign(TagsCache.prototype, {
-        addItem: function (item) {
+        }
+        //[kex: string]: TagsIndex;
+    }
+
+    export class TagsCache {
+        _index: TagsIndex;
+        _key: TagsIndex;
+
+        constructor(key: any) {
+            this._index = new TagsIndex;
+            this._key = key || null;
+        }
+
+        
+
+        addItem(item: any) {
             var tags = item.tags._list;
 
             for (var i = 0; i < tags.length; i++)
                 this.add(tags[i], item);
-        },
+        }
 
-        removeItem: function (item) {
+        removeItem(item: any) {
             var tags = item.tags._list;
 
             for (var i = 0; i < tags.length; i++)
                 this.remove(tags[i], item);
-        },
+        }
 
-        add: function (tag, item) {
+        add(tag: string, item: any) {
             // already in cache
             if (this._index[tag] && this._index[tag].list.indexOf(item) !== -1)
                 return;
@@ -40,9 +57,9 @@ Object.assign(pc, (function () {
             // add to index keys
             if (this._key)
                 this._index[tag].keys[item[this._key]] = item;
-        },
+        }
 
-        remove: function (tag, item) {
+        remove(tag: any, item: any) {
             // no index created for that tag
             if (!this._index[tag])
                 return;
@@ -69,16 +86,16 @@ Object.assign(pc, (function () {
             // if index empty, remove it
             if (this._index[tag].list.length === 0)
                 delete this._index[tag];
-        },
+        }
 
-        find: function (args) {
+        find(args: any) {
             var self = this;
             var index = { };
             var items = [];
             var i, n, t;
             var item, tag, tags, tagsRest, missingIndex;
 
-            var sort = function (a, b) {
+            var sort = function (a: any, b: any) {
                 return self._index[a].list.length - self._index[b].list.length;
             };
 
@@ -142,7 +159,7 @@ Object.assign(pc, (function () {
 
             return items;
         }
-    });
+    }
 
 
     /**
@@ -175,15 +192,29 @@ Object.assign(pc, (function () {
      * It will fire once on bulk changes, while `add`/`remove` will fire on each tag operation
      */
 
-    var Tags = function (parent) {
-        this._index = { };
-        this._list = [];
-        this._parent = parent;
+    export class Tags implements events.IEvents {
+        _index: any;
+        _list: any;
+        _parent: any;
 
-        pc.events.attach(this);
-    };
+        // IEvent hackery:
+        // playcanvas in injecting these attributes dynamically, but I dont know how to convince TypeScript to not error on it yet...
+        fire: any;
+        once: any;
+        on: any;
+        off: any;
+        hasEvent: any;
+        _callbackActive: any;
+        _callbacks: any;
 
-    Object.assign(Tags.prototype, {
+        constructor(parent: any) {
+            this._index = { };
+            this._list = [];
+            this._parent = parent;
+
+            pc.events.attach(this);
+        }
+
         /**
          * @function
          * @name pc.Tags#add
@@ -197,7 +228,7 @@ Object.assign(pc, (function () {
          * @example
          * tags.add([ 'level-2', 'mob' ]);
          */
-        add: function () {
+        add() {
             var changed = false;
             var tags = this._processArguments(arguments, true);
 
@@ -220,7 +251,7 @@ Object.assign(pc, (function () {
                 this.fire('change', this._parent);
 
             return changed;
-        },
+        }
 
 
         /**
@@ -236,7 +267,7 @@ Object.assign(pc, (function () {
          * @example
          * tags.remove([ 'level-2', 'mob' ]);
          */
-        remove: function () {
+        remove() {
             var changed = false;
 
             if (!this._list.length)
@@ -263,7 +294,7 @@ Object.assign(pc, (function () {
                 this.fire('change', this._parent);
 
             return changed;
-        },
+        }
 
 
         /**
@@ -273,7 +304,7 @@ Object.assign(pc, (function () {
          * @example
          * tags.clear();
          */
-        clear: function () {
+        clear() {
             if (!this._list.length)
                 return;
 
@@ -285,7 +316,7 @@ Object.assign(pc, (function () {
                 this.fire('remove', tags[i], this._parent);
 
             this.fire('change', this._parent);
-        },
+        }
 
 
         /**
@@ -307,15 +338,15 @@ Object.assign(pc, (function () {
          * @example
          * tags.has([ 'ui', 'settings' ], [ 'ui', 'levels' ]); // (ui AND settings) OR (ui AND levels)
          */
-        has: function () {
+        has() {
             if (!this._list.length)
                 return false;
 
             return this._has(this._processArguments(arguments));
-        },
+        }
 
 
-        _has: function (tags) {
+        _has(tags: any) {
             if (!this._list.length || !tags.length)
                 return false;
 
@@ -342,7 +373,7 @@ Object.assign(pc, (function () {
             }
 
             return false;
-        },
+        }
 
 
         /**
@@ -351,14 +382,14 @@ Object.assign(pc, (function () {
          * @description Returns immutable array of tags
          * @returns {String[]} copy of tags array
          */
-        list: function () {
+        list() {
             return this._list.slice(0);
-        },
+        }
 
 
-        _processArguments: function (args, flat) {
-            var tags = [];
-            var tmp = [];
+        _processArguments(args: IArguments, flat?: any): Tags {
+            var tags: any[] = [];
+            var tmp: any[] = [];
 
             if (!args || !args.length)
                 return tags;
@@ -392,7 +423,7 @@ Object.assign(pc, (function () {
 
             return tags;
         }
-    });
+    }
 
     /**
      * @field
@@ -406,10 +437,4 @@ Object.assign(pc, (function () {
             return this._list.length;
         }
     });
-
-
-    return {
-        TagsCache: TagsCache,
-        Tags: Tags
-    };
-}()));
+}
