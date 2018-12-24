@@ -7,8 +7,6 @@
 ../src/core/uri.js
 ../src/core/path.js
 ../src/core/string.js
-../src/core/object-pool.js
-../src/core/platform.js
 ../src/graphics/graphics.js
 ../src/graphics/scope-id.js
 ../src/graphics/scope-space.js
