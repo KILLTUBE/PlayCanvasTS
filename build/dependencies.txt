@@ -37,7 +37,6 @@
 ../src/scene/scene.js
 ../src/scene/forward-renderer.js
 ../src/scene/camera.js
-../src/scene/light.js
 ../src/scene/materials/material.js
 ../src/scene/materials/basic-material.js
 ../src/scene/materials/depth-material.js

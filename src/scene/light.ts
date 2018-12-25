@@ -1,4 +1,4 @@
-Object.assign(pc, function () {
+namespace pc {
 
     var spotCenter = new pc.Vec3();
     var spotEndPoint = new pc.Vec3();
@@ -12,78 +12,142 @@ Object.assign(pc, function () {
      * @name pc.Light
      * @classdesc A light.
      */
-    var Light = function Light() {
-        // Light properties (defaults)
-        this._type = pc.LIGHTTYPE_DIRECTIONAL;
-        this._color = new pc.Color(0.8, 0.8, 0.8);
-        this._intensity = 1;
-        this._castShadows = false;
-        this._enabled = false;
-        this._mask = 1;
-        this.isStatic = false;
-        this.key = 0;
-        this.bakeDir = true;
+    export class Light {
+        // Light properties
+        _type: any;
+        _color: Color;
+        _intensity: number;
+        _castShadows: boolean;
+        _enabled: boolean;
+        _mask: number;
+        isStatic: boolean;
+        key: number;
+        bakeDir: boolean;
 
         // Point and spot properties
-        this.attenuationStart = 10;
-        this.attenuationEnd = 10;
-        this._falloffMode = 0;
-        this._shadowType = pc.SHADOW_PCF3;
-        this._vsmBlurSize = 11;
-        this.vsmBlurMode = pc.BLUR_GAUSSIAN;
-        this.vsmBias = 0.01 * 0.25;
-        this._cookie = null; // light cookie texture (2D for spot, cubemap for point)
-        this.cookieIntensity = 1;
-        this._cookieFalloff = true;
-        this._cookieChannel = "rgb";
-        this._cookieTransform = null; // 2d rotation/scale matrix (spot only)
-        this._cookieTransformUniform = new Float32Array(4);
-        this._cookieOffset = null; // 2d position offset (spot only)
-        this._cookieOffsetUniform = new Float32Array(2);
-        this._cookieTransformSet = false;
-        this._cookieOffsetSet = false;
+        attenuationStart: number;
+        attenuationEnd: number;
+        _falloffMode: number;
+        _shadowType: any;
+        _vsmBlurSize: number;
+        vsmBlurMode: any;
+        vsmBias: number;
+        _cookie: any;
+        cookieIntensity: number;
+        _cookieFalloff: boolean;
+        _cookieChannel: string;
+        _cookieTransform: any;
+        _cookieTransformUniform: Float32Array;
+        _cookieOffset: any;
+        _cookieOffsetUniform: Float32Array;
+        _cookieTransformSet: boolean;
+        _cookieOffsetSet: boolean;
 
         // Spot properties
-        this._innerConeAngle = 40;
-        this._outerConeAngle = 45;
+        _innerConeAngle: number;
+        _outerConeAngle: number;
 
-        // Cache of light property data in a format more friendly for shader uniforms
-        this._finalColor = new Float32Array([0.8, 0.8, 0.8]);
-        var c = Math.pow(this._finalColor[0], 2.2);
-        this._linearFinalColor = new Float32Array([c, c, c]);
+        _finalColor: Float32Array;
+        _linearFinalColor: Float32Array;
 
-        this._position = new pc.Vec3(0, 0, 0);
-        this._direction = new pc.Vec3(0, 0, 0);
-        this._innerConeAngleCos = Math.cos(this._innerConeAngle * Math.PI / 180);
-        this._outerConeAngleCos = Math.cos(this._outerConeAngle * Math.PI / 180);
+        _position: Vec3;
+        _direction: Vec3;
+        _innerConeAngleCos: number;
+        _outerConeAngleCos: number;
 
         // Shadow mapping resources
-        this._shadowCamera = null;
-        this._shadowMatrix = new pc.Mat4();
-        this.shadowDistance = 40;
-        this._shadowResolution = 1024;
-        this.shadowBias = -0.0005;
-        this._normalOffsetBias = 0.0;
-        this.shadowUpdateMode = pc.SHADOWUPDATE_REALTIME;
+        _shadowCamera: any;
+        _shadowMatrix: Mat4;
+        shadowDistance: number;
+        _shadowResolution: number;
+        shadowBias: number;
+        _normalOffsetBias: number;
+        shadowUpdateMode: any;
 
-        this._scene = null;
-        this._node = null;
-        this._rendererParams = [];
+        _scene: any;
+        _node: any;
+        _rendererParams: [];
 
-        this._isVsm = false;
-        this._isPcf = true;
-        this._cacheShadowMap = false;
-        this._isCachedShadowMap = false;
+        _isVsm: boolean;
+        _isPcf: boolean;
+        _cacheShadowMap: boolean;
+        _isCachedShadowMap: boolean;
 
-        this._visibleLength = [0]; // lengths of passes in culledList
-        this._visibleList = [[]]; // culled mesh instances per pass (1 for spot, 6 for point, cameraCount for directional)
-        this._visibleCameraSettings = []; // camera settings used in each directional light pass
-    };
+        _visibleLength: [0];
+        _visibleList: [][]; // culled mesh instances per pass (1 for spot, 6 for point, cameraCount for directional)
+        _visibleCameraSettings: [];
 
-    Object.assign(Light.prototype, {
-        destroy: function () {
+        constructor() {
+            // Light properties (defaults)
+            this._type = pc.LIGHTTYPE_DIRECTIONAL;
+            this._color = new pc.Color(0.8, 0.8, 0.8);
+            this._intensity = 1;
+            this._castShadows = false;
+            this._enabled = false;
+            this._mask = 1;
+            this.isStatic = false;
+            this.key = 0;
+            this.bakeDir = true;
+
+            // Point and spot properties
+            this.attenuationStart = 10;
+            this.attenuationEnd = 10;
+            this._falloffMode = 0;
+            this._shadowType = pc.SHADOW_PCF3;
+            this._vsmBlurSize = 11;
+            this.vsmBlurMode = pc.BLUR_GAUSSIAN;
+            this.vsmBias = 0.01 * 0.25;
+            this._cookie = null; // light cookie texture (2D for spot, cubemap for point)
+            this.cookieIntensity = 1;
+            this._cookieFalloff = true;
+            this._cookieChannel = "rgb";
+            this._cookieTransform = null; // 2d rotation/scale matrix (spot only)
+            this._cookieTransformUniform = new Float32Array(4);
+            this._cookieOffset = null; // 2d position offset (spot only)
+            this._cookieOffsetUniform = new Float32Array(2);
+            this._cookieTransformSet = false;
+            this._cookieOffsetSet = false;
+
+            // Spot properties
+            this._innerConeAngle = 40;
+            this._outerConeAngle = 45;
+
+            // Cache of light property data in a format more friendly for shader uniforms
+            this._finalColor = new Float32Array([0.8, 0.8, 0.8]);
+            var c = Math.pow(this._finalColor[0], 2.2);
+            this._linearFinalColor = new Float32Array([c, c, c]);
+
+            this._position = new pc.Vec3(0, 0, 0);
+            this._direction = new pc.Vec3(0, 0, 0);
+            this._innerConeAngleCos = Math.cos(this._innerConeAngle * Math.PI / 180);
+            this._outerConeAngleCos = Math.cos(this._outerConeAngle * Math.PI / 180);
+
+            // Shadow mapping resources
+            this._shadowCamera = null;
+            this._shadowMatrix = new pc.Mat4();
+            this.shadowDistance = 40;
+            this._shadowResolution = 1024;
+            this.shadowBias = -0.0005;
+            this._normalOffsetBias = 0.0;
+            this.shadowUpdateMode = pc.SHADOWUPDATE_REALTIME;
+
+            this._scene = null;
+            this._node = null;
+            this._rendererParams = [];
+
+            this._isVsm = false;
+            this._isPcf = true;
+            this._cacheShadowMap = false;
+            this._isCachedShadowMap = false;
+
+            this._visibleLength = [0]; // lengths of passes in culledList
+            this._visibleList = [[]]; // culled mesh instances per pass (1 for spot, 6 for point, cameraCount for directional)
+            this._visibleCameraSettings = []; // camera settings used in each directional light pass
+        }
+
+        destroy() {
             this._destroyShadowMap();
-        },
+        }
 
         /**
          * @private
@@ -92,7 +156,7 @@ Object.assign(pc, function () {
          * @description Duplicates a light node but does not 'deep copy' the hierarchy.
          * @returns {pc.Light} A cloned Light.
          */
-        clone: function () {
+        clone() {
             var clone = new pc.Light();
 
             // Clone Light properties
@@ -132,13 +196,13 @@ Object.assign(pc, function () {
             // clone.cookieOffset = this._cookieOffset;
 
             return clone;
-        },
+        }
 
-        getColor: function () {
+        getColor() {
             return this._color;
-        },
+        }
 
-        getBoundingSphere: function (sphere) {
+        getBoundingSphere(sphere) {
             if (this._type === pc.LIGHTTYPE_SPOT) {
                 var range = this.attenuationEnd;
                 var angle = this._outerConeAngle;
@@ -163,9 +227,9 @@ Object.assign(pc, function () {
                 sphere.center = this._node.getPosition();
                 sphere.radius = this.attenuationEnd;
             }
-        },
+        }
 
-        getBoundingBox: function (box) {
+        getBoundingBox(box: BoundingBox) {
             if (this._type === pc.LIGHTTYPE_SPOT) {
                 var range = this.attenuationEnd;
                 var angle = this._outerConeAngle;
@@ -182,9 +246,9 @@ Object.assign(pc, function () {
                 box.center.copy(this._node.getPosition());
                 box.halfExtents.set(this.attenuationEnd, this.attenuationEnd, this.attenuationEnd);
             }
-        },
+        }
 
-        _updateFinalColor: function () {
+        _updateFinalColor() {
             var color = this._color;
             var r = color.r;
             var g = color.g;
@@ -207,9 +271,9 @@ Object.assign(pc, function () {
                 linearFinalColor[1] = Math.pow(finalColor[1], 2.2);
                 linearFinalColor[2] = Math.pow(finalColor[2], 2.2);
             }
-        },
+        }
 
-        setColor: function () {
+        setColor() {
             var r, g, b;
             if (arguments.length === 1) {
                 r = arguments[0].r;
@@ -224,9 +288,9 @@ Object.assign(pc, function () {
             this._color.set(r, g, b);
 
             this._updateFinalColor();
-        },
+        }
 
-        _destroyShadowMap: function () {
+        _destroyShadowMap() {
             if (this._shadowCamera) {
                 if (!this._isCachedShadowMap) {
                     var rt = this._shadowCamera.renderTarget;
@@ -251,15 +315,15 @@ Object.assign(pc, function () {
                     this.shadowUpdateMode = pc.SHADOWUPDATE_THISFRAME;
                 }
             }
-        },
+        }
 
-        updateShadow: function () {
+        updateShadow() {
             if (this.shadowUpdateMode !== pc.SHADOWUPDATE_REALTIME) {
                 this.shadowUpdateMode = pc.SHADOWUPDATE_THISFRAME;
             }
-        },
+        }
 
-        updateKey: function () {
+        updateKey() {
             // Key definition:
             // Bit
             // 31      : sign bit (leave)
@@ -296,25 +360,21 @@ Object.assign(pc, function () {
 
             this.key = key;
         }
-    });
 
-    Object.defineProperty(Light.prototype, 'enabled', {
-        get: function () {
+        get enabled() {
             return this._type;
-        },
-        set: function (value) {
+        }
+        set enabled(value) {
             if (this._type === value)
                 return;
 
             this._enabled = value;
         }
-    });
 
-    Object.defineProperty(Light.prototype, 'type', {
-        get: function () {
+        get type() {
             return this._type;
-        },
-        set: function (value) {
+        }
+        set type(value) {
             if (this._type === value)
                 return;
 
@@ -326,25 +386,21 @@ Object.assign(pc, function () {
             this._shadowType = null;
             this.shadowType = stype; // refresh shadow type; switching from direct/spot to point and back may change it
         }
-    });
 
-    Object.defineProperty(Light.prototype, 'mask', {
-        get: function () {
+        get mask() {
             return this._mask;
-        },
-        set: function (value) {
+        }
+        set mask(value) {
             if (this._mask === value)
                 return;
 
             this._mask = value;
         }
-    });
 
-    Object.defineProperty(Light.prototype, 'shadowType', {
-        get: function () {
+        get shadowType() {
             return this._shadowType;
-        },
-        set: function (value) {
+        }
+        set shadowType(value) {
             if (this._shadowType === value)
                 return;
 
@@ -370,26 +426,22 @@ Object.assign(pc, function () {
             this._destroyShadowMap();
             this.updateKey();
         }
-    });
 
-    Object.defineProperty(Light.prototype, 'castShadows', {
-        get: function () {
+        get castShadows() {
             return this._castShadows && this._mask !== pc.MASK_LIGHTMAP && this._mask !== 0;
-        },
-        set: function (value) {
+        }
+        set castShadows(value) {
             if (this._castShadows === value)
                 return;
 
             this._castShadows = value;
             this.updateKey();
         }
-    });
 
-    Object.defineProperty(Light.prototype, 'shadowResolution', {
-        get: function () {
+        get shadowResolution() {
             return this._shadowResolution;
-        },
-        set: function (value) {
+        }
+        set shadowResolution(value) {
             if (this._shadowResolution === value)
                 return;
 
@@ -401,26 +453,22 @@ Object.assign(pc, function () {
             }
             this._shadowResolution = value;
         }
-    });
 
-    Object.defineProperty(Light.prototype, 'vsmBlurSize', {
-        get: function () {
+        get vsmBlurSize() {
             return this._vsmBlurSize;
-        },
-        set: function (value) {
+        }
+        set vsmBlurSize(value) {
             if (this._vsmBlurSize === value)
                 return;
 
             if (value % 2 === 0) value++; // don't allow even size
             this._vsmBlurSize = value;
         }
-    });
 
-    Object.defineProperty(Light.prototype, 'normalOffsetBias', {
-        get: function () {
+        get normalOffsetBias() {
             return this._normalOffsetBias;
-        },
-        set: function (value) {
+        }
+        set normalOffsetBias(value) {
             if (this._normalOffsetBias === value)
                 return;
 
@@ -429,90 +477,76 @@ Object.assign(pc, function () {
             }
             this._normalOffsetBias = value;
         }
-    });
 
-    Object.defineProperty(Light.prototype, 'falloffMode', {
-        get: function () {
+        get falloffMode() {
             return this._falloffMode;
-        },
-        set: function (value) {
+        }
+        set falloffMode(value) {
             if (this._falloffMode === value)
                 return;
 
             this._falloffMode = value;
             this.updateKey();
         }
-    });
 
-    Object.defineProperty(Light.prototype, 'innerConeAngle', {
-        get: function () {
+        get innerConeAngle() {
             return this._innerConeAngle;
-        },
-        set: function (value) {
+        }
+        set innerConeAngle(value) {
             if (this._innerConeAngle === value)
                 return;
 
             this._innerConeAngle = value;
             this._innerConeAngleCos = Math.cos(value * Math.PI / 180);
         }
-    });
 
-    Object.defineProperty(Light.prototype, 'outerConeAngle', {
-        get: function () {
+        get outerConeAngle() {
             return this._outerConeAngle;
-        },
-        set: function (value) {
+        }
+        set outerConeAngle(value) {
             if (this._outerConeAngle === value)
                 return;
 
             this._outerConeAngle = value;
             this._outerConeAngleCos = Math.cos(value * Math.PI / 180);
         }
-    });
 
-    Object.defineProperty(Light.prototype, 'intensity', {
-        get: function () {
+        get intensity() {
             return this._intensity;
-        },
-        set: function (value) {
+        }
+        set intensity(value) {
             if (this._intensity !== value) {
                 this._intensity = value;
                 this._updateFinalColor();
             }
         }
-    });
-
-    Object.defineProperty(Light.prototype, 'cookie', {
-        get: function () {
+    
+        get cookie() {
             return this._cookie;
-        },
-        set: function (value) {
+        }
+        set cookie(value) {
             if (this._cookie === value)
                 return;
 
             this._cookie = value;
             this.updateKey();
         }
-    });
-
-    Object.defineProperty(Light.prototype, 'cookieFalloff', {
-        get: function () {
+    
+        get cookieFalloff() {
             return this._cookieFalloff;
-        },
-        set: function (value) {
+        }
+        set cookieFalloff(value) {
             if (this._cookieFalloff === value)
                 return;
 
             this._cookieFalloff = value;
             this.updateKey();
         }
-    });
-
-    Object.defineProperty(Light.prototype, 'cookieChannel', {
-        get: function () {
+    
+        get cookieChannel() {
             return this._cookieChannel;
-        },
-        set: function (value) {
+        }
+        set cookieChannel(value) {
             if (this._cookieChannel === value)
                 return;
 
@@ -525,13 +559,11 @@ Object.assign(pc, function () {
             this._cookieChannel = value;
             this.updateKey();
         }
-    });
-
-    Object.defineProperty(Light.prototype, 'cookieTransform', {
-        get: function () {
+    
+        get cookieTransform() {
             return this._cookieTransform;
-        },
-        set: function (value) {
+        }
+        set cookieTransform(value) {
             if (this._cookieTransform === value)
                 return;
 
@@ -543,13 +575,12 @@ Object.assign(pc, function () {
             }
             this.updateKey();
         }
-    });
 
-    Object.defineProperty(Light.prototype, 'cookieOffset', {
-        get: function () {
+
+        get cookieOffset() {
             return this._cookieOffset;
-        },
-        set: function (value) {
+        }
+        set cookieOffset(value) {
             if (this._cookieOffset === value)
                 return;
 
@@ -565,11 +596,9 @@ Object.assign(pc, function () {
                 this._cookieTransformSet = false;
             }
             this.updateKey();
-        }
-    });
+        }        
+    }
 
 
-    return {
-        Light: Light
-    };
-}());
+
+}
