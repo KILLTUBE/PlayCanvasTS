@@ -1,3 +1,5 @@
+// not used at all currently... idk how to extend prototypes via TypeScript... and I would rather have a custom Immediate instance or something
+
 Object.assign(pc.Application.prototype, function () {
 
     var tempGraphNode = new pc.GraphNode();

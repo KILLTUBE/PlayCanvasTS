@@ -37,7 +37,7 @@ namespace pc {
     export var viewMat = new pc.Mat4();
     export var viewMat3 = new pc.Mat3();
     export var viewProjMat = new pc.Mat4();
-    export var projMat;
+    export var projMat: any;
 
     export var viewInvL = new pc.Mat4();
     export var viewInvR = new pc.Mat4();
@@ -45,7 +45,8 @@ namespace pc {
     export var viewR = new pc.Mat4();
     export var viewPosL = new pc.Vec3();
     export var viewPosR = new pc.Vec3();
-    export var projL, projR;
+    export var projL: any;
+    export var projR: any;
     export var viewMat3L = new pc.Mat4();
     export var viewMat3R = new pc.Mat4();
     export var viewProjMatL = new pc.Mat4();
@@ -53,15 +54,19 @@ namespace pc {
 
     export var frustumDiagonal = new pc.Vec3();
     export var tempSphere = { center: null, radius: 0 };
-    export var meshPos;
+    export var meshPos: any;
     export var visibleSceneAabb = new pc.BoundingBox();
     export var boneTextureSize = [0, 0];
-    export var boneTexture, instancingData, modelMatrix, normalMatrix;
+    export var boneTexture: any;
+    export var instancingData: any;
+    export var modelMatrix: any;
+    export var normalMatrix: any;
 
     export var shadowMapCubeCache = {};
     export var maxBlurSize = 25;
 
-    export var keyA, keyB;
+    export var keyA: any;
+    export var keyB: any;
 
     // The 8 points of the camera frustum transformed to light space
     export var frustumPoints = [];
@@ -360,7 +365,24 @@ namespace pc {
      * @param {pc.GraphicsDevice} graphicsDevice The graphics device used by the renderer.
      */
     export class ForwardRenderer {
-        constructor(graphicsDevice) {
+        device: any;
+
+        _shadowDrawCalls: number;
+        _forwardDrawCalls: number;
+        _skinDrawCalls: number;
+        _camerasRendered: number;
+        _materialSwitches: number;
+        _shadowMapUpdates: number;
+        _shadowMapTime: number;
+        _depthMapTime: number;
+        _forwardTime: number;
+        _cullTime: number;
+        _sortTime: number;
+        _skinTime: number;
+        _morphTime: number;
+        _instancingTime: number;
+
+        constructor(graphicsDevice: any) {
             this.device = graphicsDevice;
             var device = this.device;
 

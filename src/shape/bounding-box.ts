@@ -19,7 +19,7 @@ namespace pc {
         _min: Vec3;
         _max: Vec3;
 
-        constructor(center: Vec3, halfExtents: Vec3) {
+        constructor(center?: Vec3, halfExtents?: Vec3) {
             this.center = center || new pc.Vec3(0, 0, 0);
             this.halfExtents = halfExtents || new pc.Vec3(0.5, 0.5, 0.5);
             this._min = new pc.Vec3();

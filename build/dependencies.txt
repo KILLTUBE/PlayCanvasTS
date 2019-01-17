@@ -193,5 +193,4 @@
 ../src/asset/asset-registry.js
 ../src/asset/asset-reference.js
 ../src/backwards-compatibility.js
-../src/scene/immediate.js
 ../src/scene/lightmapper.js
