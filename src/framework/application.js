@@ -420,8 +420,6 @@ Object.assign(pc, function () {
         this.renderer.scene = this.scene;
         this.lightmapper = new pc.Lightmapper(this.graphicsDevice, this.root, this.scene, this.renderer, this.assets);
         this.once('prerender', this._firstBake, this);
-        this.batcher = new pc.BatchManager(this.graphicsDevice, this.root, this.scene);
-        this.once('prerender', this._firstBatch, this);
 
         this.keyboard = options.keyboard || null;
         this.mouse = options.mouse || null;
@@ -814,15 +812,6 @@ Object.assign(pc, function () {
                 this.scene.layers = composition;
             }
 
-            // add batch groups
-            if (props.batchGroups) {
-                for (i = 0, len = props.batchGroups.length; i < len; i++) {
-                    var grp = props.batchGroups[i];
-                    this.batcher.addGroup(grp.name, grp.dynamic, grp.maxAabbSize, grp.id, grp.layers);
-                }
-
-            }
-
             this._loadLibraries(props.libraries, callback);
         },
 
@@ -1027,7 +1016,6 @@ Object.assign(pc, function () {
 
             this.fire("prerender");
             this.syncQueue.runSync();
-            this.batcher.updateAll();
             pc._skipRenderCounter = 0;
             this.renderer.renderComposition(this.scene.layers);
             this.fire("postrender");
@@ -1442,11 +1430,6 @@ Object.assign(pc, function () {
         },
 
         _firstBatch: function () {
-            if (this.scene._needsStaticPrepare) {
-                this.renderer.prepareStaticMeshes(this.graphicsDevice, this.scene);
-                this.scene._needsStaticPrepare = false;
-            }
-            this.batcher.generate();
         },
 
         /**
@@ -1536,9 +1519,6 @@ Object.assign(pc, function () {
 
             this.lightmapper.destroy();
             this.lightmapper = null;
-
-            this.batcher.destroyManager();
-            this.batcher = null;
 
             this._entityIndex = {};
 
