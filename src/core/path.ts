@@ -2,13 +2,13 @@
  * @namespace pc.path
  * @description File path API
  */
-pc.path = function () {
-    return {
+namespace pc.path {
+    
         /**
          * The character that separates path segments
          * @name pc.path.delimiter
          */
-        delimiter: "/",
+        export var delimiter: "/";
         /**
          * @function
          * @name pc.path.join
@@ -17,7 +17,7 @@ pc.path = function () {
          * @param {String} two Second part of path to join.
          * @returns {String} The joined file path.
          */
-        join: function () {
+        export function join() {
             var index;
             var num = arguments.length;
             var result = arguments[0];
@@ -41,7 +41,7 @@ pc.path = function () {
             }
 
             return result;
-        },
+        }
 
         /**
          * @function
@@ -50,7 +50,7 @@ pc.path = function () {
          * @param  {String} path The path to normalize
          * @returns {String} The normalized path
          */
-        normalize: function (path) {
+        export function normalize(path) {
             var lead = path.startsWith(pc.path.delimiter);
             var trail = path.endsWith(pc.path.delimiter);
 
@@ -83,7 +83,7 @@ pc.path = function () {
             }
 
             return result;
-        },
+        }
 
         /**
          * @function
@@ -93,12 +93,12 @@ pc.path = function () {
          * @param {String} path The path to split.
          * @returns {Array} The split path which is an array of two strings, the path and the filename.
          */
-        split: function (path) {
+        export function split(path) {
             var parts = path.split(pc.path.delimiter);
             var tail = parts.slice(parts.length - 1)[0];
             var head = parts.slice(0, parts.length - 1).join(pc.path.delimiter);
             return [head, tail];
-        },
+        }
 
         /**
          * @function
@@ -111,9 +111,9 @@ pc.path = function () {
          * pc.path.getBasename("/path/to/file.txt"); // returns "path.txt"
          * pc.path.getBasename("/path/to/dir"); // returns "dir"
          */
-        getBasename: function (path) {
+        export function getBasename(path) {
             return pc.path.split(path)[1];
-        },
+        }
 
         /**
          * @function
@@ -122,24 +122,24 @@ pc.path = function () {
          * @param {String} path The path to get the directory from
          * @returns {String} The directory part of the path.
          */
-        getDirectory: function (path) {
+        export function getDirectory(path) {
             var parts = path.split(pc.path.delimiter);
             return parts.slice(0, parts.length - 1).join(pc.path.delimiter);
-        },
+        }
 
-        getExtension: function (path) {
+        export function getExtension(path) {
             var ext = path.split('?')[0].split('.').pop();
             if (ext !== path) {
                 return "." + ext;
             }
             return "";
-        },
+        }
 
-        isRelativePath: function (s) {
+        export function isRelativePath(s) {
             return s.charAt(0) !== "/" && s.match(/:\/\//) === null;
-        },
+        }
 
-        extractPath: function (s) {
+        export function extractPath(s) {
             var path = ".",
                 parts = s.split("/"),
                 i = 0;
@@ -154,5 +154,4 @@ pc.path = function () {
             }
             return path;
         }
-    };
-}();
+}

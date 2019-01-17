@@ -4,8 +4,6 @@
 ../src/polyfill/pointer-lock.js
 ../src/polyfill/request-animation-frame.js
 ../src/polyfill/string.js
-../src/core/uri.js
-../src/core/path.js
 ../src/graphics/graphics.js
 ../src/graphics/scope-id.js
 ../src/graphics/scope-space.js
