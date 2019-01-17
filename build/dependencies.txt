@@ -32,7 +32,6 @@
 ../src/graphics/program-lib/skybox.js
 ../src/graphics/post-effect.js
 ../src/scene/scene.js
-../src/scene/forward-renderer.js
 ../src/scene/materials/material.js
 ../src/scene/materials/basic-material.js
 ../src/scene/materials/depth-material.js
