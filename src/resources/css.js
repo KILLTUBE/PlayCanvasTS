@@ -9,7 +9,7 @@ Object.assign(pc, function () {
                 if (!err) {
                     callback(null, response);
                 } else {
-                    callback(pc.string.format("Error loading css resource: {0} [{1}]", url, err));
+                    callback(("Error loading css resource: {0} [{1}]", url, err));
                 }
             });
         },

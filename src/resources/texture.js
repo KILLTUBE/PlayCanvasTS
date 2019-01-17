@@ -230,7 +230,7 @@ Object.assign(pc, function () {
 
                 // Call error callback with details.
                 image.onerror = function (event) {
-                    callback(pc.string.format("Error loading Texture from: '{0}'", url));
+                    callback(("Error loading Texture from: '{0}'", url));
                 };
 
                 image.src = url;
@@ -249,7 +249,7 @@ Object.assign(pc, function () {
 
                     // Call error callback with details.
                     image.onerror = function (event) {
-                        callback(pc.string.format("Error loading Texture from: '{0}'", url));
+                        callback(("Error loading Texture from: '{0}'", url));
                     };
 
                     image.src = url;
@@ -258,7 +258,7 @@ Object.assign(pc, function () {
                     // Use timeout because asset events can be hooked up after load gets called in some
                     // cases. For example, material loads a texture on 'add' event.
                     setTimeout(function () {
-                        callback(pc.string.format("Error loading Texture: format not supported: '{0}'", ext));
+                        callback(("Error loading Texture: format not supported: '{0}'", ext));
                     }, 0);
                 }
             }

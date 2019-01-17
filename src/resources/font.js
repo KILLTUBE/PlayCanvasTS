@@ -47,7 +47,7 @@ Object.assign(pc, function () {
                             });
                         });
                     } else {
-                        callback(pc.string.format("Error loading font resource: {0} [{1}]", url, err));
+                        callback(("Error loading font resource: {0} [{1}]", url, err));
                     }
                 });
 

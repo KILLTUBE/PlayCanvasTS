@@ -35,7 +35,7 @@ Object.assign(pc, function () {
                     }
                 } else {
                     if (callback) {
-                        callback(pc.string.format("Error loading material: {0} [{1}]", url, err));
+                        callback(("Error loading material: {0} [{1}]", url, err));
                     }
                 }
             });

@@ -245,7 +245,7 @@ Object.assign(pc, function () {
         addSlot: function (name, options) {
             var slots = this.data.slots;
             if (slots[name]) {
-                logWARNING('A sound slot with name ' + name + ' already exists on Entity ' + this.entity.getPath());
+                console.log('A sound slot with name ' + name + ' already exists on Entity ' + this.entity.getPath());
                 return null;
             }
 
@@ -313,7 +313,7 @@ Object.assign(pc, function () {
 
             var slot = this.slots[name];
             if (!slot) {
-                logWARNING('Trying to play sound slot with name ' + name + ' which does not exist');
+                console.log('Trying to play sound slot with name ' + name + ' which does not exist');
                 return null;
             }
 
@@ -338,7 +338,7 @@ Object.assign(pc, function () {
             if (name) {
                 slot = slots[name];
                 if (!slot) {
-                    logWARNING('Trying to pause sound slot with name ' + name + ' which does not exist');
+                    console.log('Trying to pause sound slot with name ' + name + ' which does not exist');
                     return;
                 }
 
@@ -368,7 +368,7 @@ Object.assign(pc, function () {
             if (name) {
                 slot = slots[name];
                 if (!slot) {
-                    logWARNING('Trying to resume sound slot with name ' + name + ' which does not exist');
+                    console.log('Trying to resume sound slot with name ' + name + ' which does not exist');
                     return;
                 }
 
@@ -400,7 +400,7 @@ Object.assign(pc, function () {
             if (name) {
                 slot = slots[name];
                 if (!slot) {
-                    logWARNING('Trying to stop sound slot with name ' + name + ' which does not exist');
+                    console.log('Trying to stop sound slot with name ' + name + ' which does not exist');
                     return;
                 }
 

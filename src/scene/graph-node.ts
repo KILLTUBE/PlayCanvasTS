@@ -382,32 +382,6 @@ namespace pc {
         }
 
         /**
-         * @function
-         * @name  pc.GraphNode#getPath
-         * @description Gets the path of the entity relative to the root of the hierarchy
-         * @returns {String} The path
-         * @example
-         * var path = this.entity.getPath();
-         */
-        getPath() {
-            var parent = this._parent;
-            if (parent) {
-                var path = this.name;
-                var format = "{0}/{1}";
-
-                while (parent && parent._parent) {
-                    path = pc.string.format(format, parent.name, path);
-                    parent = parent._parent;
-                }
-
-                return path;
-            }
-            return '';
-
-        }
-
-
-        /**
          * @private
          * @deprecated
          * @function

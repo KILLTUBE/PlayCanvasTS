@@ -105,5 +105,5 @@ namespace pc {
 
         }
     }
-    pc.platform = new Platform;
+    export var platform = new Platform;
 }

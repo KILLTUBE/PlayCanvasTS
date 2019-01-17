@@ -50,7 +50,7 @@ namespace pc.path {
          * @param  {String} path The path to normalize
          * @returns {String} The normalized path
          */
-        export function normalize(path) {
+        export function normalize(path: string) {
             var lead = path.startsWith(pc.path.delimiter);
             var trail = path.endsWith(pc.path.delimiter);
 
@@ -58,7 +58,7 @@ namespace pc.path {
 
             var result = '';
 
-            var cleaned = [];
+            var cleaned: any[] = [];
 
             for (var i = 0; i < parts.length; i++) {
                 if (parts[i] === '') continue;
@@ -93,7 +93,7 @@ namespace pc.path {
          * @param {String} path The path to split.
          * @returns {Array} The split path which is an array of two strings, the path and the filename.
          */
-        export function split(path) {
+        export function split(path: string) {
             var parts = path.split(pc.path.delimiter);
             var tail = parts.slice(parts.length - 1)[0];
             var head = parts.slice(0, parts.length - 1).join(pc.path.delimiter);
@@ -111,7 +111,7 @@ namespace pc.path {
          * pc.path.getBasename("/path/to/file.txt"); // returns "path.txt"
          * pc.path.getBasename("/path/to/dir"); // returns "dir"
          */
-        export function getBasename(path) {
+        export function getBasename(path: string) {
             return pc.path.split(path)[1];
         }
 
@@ -122,12 +122,12 @@ namespace pc.path {
          * @param {String} path The path to get the directory from
          * @returns {String} The directory part of the path.
          */
-        export function getDirectory(path) {
+        export function getDirectory(path: string) {
             var parts = path.split(pc.path.delimiter);
             return parts.slice(0, parts.length - 1).join(pc.path.delimiter);
         }
 
-        export function getExtension(path) {
+        export function getExtension(path: string) {
             var ext = path.split('?')[0].split('.').pop();
             if (ext !== path) {
                 return "." + ext;
@@ -135,11 +135,11 @@ namespace pc.path {
             return "";
         }
 
-        export function isRelativePath(s) {
+        export function isRelativePath(s: string) {
             return s.charAt(0) !== "/" && s.match(/:\/\//) === null;
         }
 
-        export function extractPath(s) {
+        export function extractPath(s: string) {
             var path = ".",
                 parts = s.split("/"),
                 i = 0;

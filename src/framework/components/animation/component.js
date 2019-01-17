@@ -41,7 +41,7 @@ Object.assign(pc, function () {
          */
         play: function (name, blendTime) {
             if (!this.data.animations[name]) {
-                console.error(pc.string.format("Trying to play animation '{0}' which doesn't exist", name));
+                console.error(("Trying to play animation '{0}' which doesn't exist", name));
                 return;
             }
 

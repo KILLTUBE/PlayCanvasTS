@@ -384,7 +384,7 @@ Object.assign(pc, function () {
                 response = xhr.response;
             } else {
                 if (xhr.responseType === Http.ResponseType.ARRAY_BUFFER) {
-                    logWARNING(pc.string.format('responseType: {0} being served with Content-Type: {1}', Http.ResponseType.ARRAY_BUFFER, contentType));
+                    console.log('responseType: {0} being served with Content-Type: {1}', Http.ResponseType.ARRAY_BUFFER, contentType);
                     response = xhr.response;
                 } else {
                     if (xhr.responseType === Http.ResponseType.DOCUMENT || contentType === this.ContentType.XML) {

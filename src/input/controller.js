@@ -130,7 +130,7 @@ Object.assign(pc, function () {
             this._enableKeyboard();
         }
         if (this._actions[action]) {
-            throw new Error(pc.string.format("Action: {0} already registered", action));
+            throw new Error(("Action: {0} already registered", action));
         }
 
         if (keys === undefined) {

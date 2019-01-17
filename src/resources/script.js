@@ -81,7 +81,7 @@ Object.assign(pc, function () {
             element.async = false;
 
             element.addEventListener('error', function (e) {
-                callback(pc.string.format("Script: {0} failed to load", e.target.src));
+                callback(("Script: {0} failed to load", e.target.src));
             }, false);
 
             var done = false;

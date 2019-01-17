@@ -8,7 +8,7 @@ Object.assign(pc, function () {
         load: function (url, callback) {
             pc.http.get(url, function (err, response) {
                 if (err) {
-                    callback(pc.string.format("Error loading animation resource: {0} [{1}]", url, err));
+                    callback(("Error loading animation resource: {0} [{1}]", url, err));
                 } else {
                     callback(null, response);
                 }

@@ -90,7 +90,7 @@ Object.assign(pc, function () {
                                 parsed[group].normals.push(normals[r[2] * 3], normals[r[2] * 3 + 1], normals[r[2] * 3 + 2]); // expand normals from indices
                         }
                     } else {
-                        console.error(pc.string.format("OBJ uses unsupported {0}-gons", parts.length - 1));
+                        console.error(("OBJ uses unsupported {0}-gons", parts.length - 1));
                     }
                 }
             }

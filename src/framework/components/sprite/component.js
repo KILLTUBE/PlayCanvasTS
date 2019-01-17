@@ -503,7 +503,7 @@ Object.assign(pc, function () {
                 this._currentClip = clip;
                 this._currentClip.play();
             } else {
-                logWARNING('Trying to play sprite animation ' + name + ' which does not exist.');
+                console.log('Trying to play sprite animation ' + name + ' which does not exist.');
             }
 
             return clip;
