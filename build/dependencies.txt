@@ -33,7 +33,6 @@
 ../src/graphics/post-effect.js
 ../src/scene/scene.js
 ../src/scene/forward-renderer.js
-../src/scene/camera.js
 ../src/scene/materials/material.js
 ../src/scene/materials/basic-material.js
 ../src/scene/materials/depth-material.js
@@ -197,4 +196,3 @@
 ../src/backwards-compatibility.js
 ../src/scene/immediate.js
 ../src/scene/lightmapper.js
-../src/scene/batching.js
