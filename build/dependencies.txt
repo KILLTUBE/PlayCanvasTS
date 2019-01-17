@@ -74,7 +74,6 @@
 ../src/script/script-registry.js
 ../src/script/script.js
 ../src/framework/script.js
-../src/framework/application.js
 ../src/framework/stats.js
 ../src/framework/scene-registry.js
 ../src/framework/components/registry.js

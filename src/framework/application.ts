@@ -1,4 +1,4 @@
-Object.assign(pc, function () {
+namespace pc {
     /**
      * @name pc.Application
      * @class Default application which performs general setup code and initiates the main game loop.
@@ -120,404 +120,6 @@ Object.assign(pc, function () {
      * @description When true (the default) the application's render function is called every frame.
      */
 
-    /**
-     * @name pc.Application#renderNextFrame
-     * @type Boolean
-     * @description If {@link pc.Application#autoRender} is false, set `app.renderNextFrame` true to force application to render the scene once next frame.
-     * @example
-     * // render the scene only while space key is pressed
-     * if (this.app.keyboard.isPressed(pc.KEY_SPACE)) {
-     *    this.app.renderNextFrame = true;
-     * }
-     */
-
-    var Application = function (canvas, options) {
-        options = options || {};
-
-        // Open the log
-        pc.log.open();
-        // Add event support
-        pc.events.attach(this);
-
-        // Store application instance
-        Application._applications[canvas.id] = this;
-        Application._currentApplication = this;
-
-        this._time = 0;
-        this.timeScale = 1;
-        this.maxDeltaTime = 0.1; // Maximum delta is 0.1s or 10 fps.
-
-        this.frame = 0; // the total number of frames the application has updated since start() was called
-
-        this.autoRender = true;
-        this.renderNextFrame = false;
-
-        // enable if you want entity type script attributes
-        // to not be re-mapped when an entity is cloned
-        this.useLegacyScriptAttributeCloning = pc.script.legacy;
-
-        this._librariesLoaded = false;
-        this._fillMode = pc.FILLMODE_KEEP_ASPECT;
-        this._resolutionMode = pc.RESOLUTION_FIXED;
-        this._allowResize = true;
-
-        // for compatibility
-        this.context = this;
-
-        this.graphicsDevice = new pc.GraphicsDevice(canvas, options.graphicsDeviceOptions);
-        this.stats = new pc.ApplicationStats(this.graphicsDevice);
-        this._audioManager = new pc.SoundManager(options);
-        this.loader = new pc.ResourceLoader();
-
-        // stores all entities that have been created
-        // for this app by guid
-        this._entityIndex = {};
-
-        this.scene = new pc.Scene();
-        this.syncQueue = new pc.SyncQueue();
-        this.root = new pc.Entity(this);
-        this.root._enabledInHierarchy = true;
-        this._enableList = [];
-        this._enableList.size = 0;
-        this.assets = new pc.AssetRegistry(this.loader);
-        if (options.assetPrefix) this.assets.prefix = options.assetPrefix;
-        this.scriptsOrder = options.scriptsOrder || [];
-        this.scripts = new pc.ScriptRegistry(this);
-
-        this._sceneRegistry = new pc.SceneRegistry(this);
-
-        var self = this;
-        this.defaultLayerWorld = new pc.Layer({
-            name: "World",
-            id: pc.LAYERID_WORLD
-        });
-
-        if (this.graphicsDevice.webgl2) {
-            // WebGL 2 depth layer just copies existing depth
-            this.defaultLayerDepth = new pc.Layer({
-                enabled: false,
-                name: "Depth",
-                id: pc.LAYERID_DEPTH,
-
-                onEnable: function () {
-                    if (this.renderTarget) return;
-                    var depthBuffer = new pc.Texture(self.graphicsDevice, {
-                        format: pc.PIXELFORMAT_DEPTHSTENCIL,
-                        width: self.graphicsDevice.width,
-                        height: self.graphicsDevice.height
-                    });
-                    depthBuffer.minFilter = pc.FILTER_NEAREST;
-                    depthBuffer.magFilter = pc.FILTER_NEAREST;
-                    depthBuffer.addressU = pc.ADDRESS_CLAMP_TO_EDGE;
-                    depthBuffer.addressV = pc.ADDRESS_CLAMP_TO_EDGE;
-                    this.renderTarget = new pc.RenderTarget({
-                        colorBuffer: null,
-                        depthBuffer: depthBuffer,
-                        autoResolve: false
-                    });
-                    self.graphicsDevice.scope.resolve("uDepthMap").setValue(depthBuffer);
-                },
-
-                onDisable: function () {
-                    if (!this.renderTarget) return;
-                    this.renderTarget._depthBuffer.destroy();
-                    this.renderTarget.destroy();
-                    this.renderTarget = null;
-                },
-
-                onPreRenderOpaque: function (cameraPass) { // resize depth map if needed
-                    var gl = self.graphicsDevice.gl;
-                    this.srcFbo = gl.getParameter(gl.FRAMEBUFFER_BINDING);
-
-                    if (!this.renderTarget || (this.renderTarget.width !== self.graphicsDevice.width || this.renderTarget.height !== self.graphicsDevice.height)) {
-                        this.onDisable();
-                        this.onEnable();
-                    }
-
-                    // disable clearing
-                    this.oldClear = this.cameras[cameraPass].camera._clearOptions;
-                    this.cameras[cameraPass].camera._clearOptions = this.depthClearOptions;
-                },
-
-                onPostRenderOpaque: function (cameraPass) { // copy depth
-                    if (!this.renderTarget) return;
-
-                    this.cameras[cameraPass].camera._clearOptions = this.oldClear;
-
-                    var gl = self.graphicsDevice.gl;
-
-                    self.graphicsDevice.setRenderTarget(this.renderTarget);
-                    self.graphicsDevice.updateBegin();
-
-                    gl.bindFramebuffer(gl.READ_FRAMEBUFFER, this.srcFbo);
-                    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, this.renderTarget._glFrameBuffer);
-                    gl.blitFramebuffer( 0, 0, this.renderTarget.width, this.renderTarget.height,
-                                        0, 0, this.renderTarget.width, this.renderTarget.height,
-                                        gl.DEPTH_BUFFER_BIT,
-                                        gl.NEAREST);
-                }
-
-            });
-            this.defaultLayerDepth.depthClearOptions = {
-                flags: 0
-            };
-        } else {
-            // WebGL 1 depth layer just renders same objects as in World, but with RGBA-encoded depth shader
-            this.defaultLayerDepth = new pc.Layer({
-                enabled: false,
-                name: "Depth",
-                id: pc.LAYERID_DEPTH,
-                shaderPass: pc.SHADER_DEPTH,
-
-                onEnable: function () {
-                    if (this.renderTarget) return;
-                    var colorBuffer = new pc.Texture(self.graphicsDevice, {
-                        format: pc.PIXELFORMAT_R8_G8_B8_A8,
-                        width: self.graphicsDevice.width,
-                        height: self.graphicsDevice.height
-                    });
-                    colorBuffer.minFilter = pc.FILTER_NEAREST;
-                    colorBuffer.magFilter = pc.FILTER_NEAREST;
-                    colorBuffer.addressU = pc.ADDRESS_CLAMP_TO_EDGE;
-                    colorBuffer.addressV = pc.ADDRESS_CLAMP_TO_EDGE;
-                    this.renderTarget = new pc.RenderTarget(self.graphicsDevice, colorBuffer, {
-                        depth: true,
-                        stencil: self.graphicsDevice.supportsStencil
-                    });
-                    self.graphicsDevice.scope.resolve("uDepthMap").setValue(colorBuffer);
-                },
-
-                onDisable: function () {
-                    if (!this.renderTarget) return;
-                    this.renderTarget._colorBuffer.destroy();
-                    this.renderTarget.destroy();
-                    this.renderTarget = null;
-                },
-
-                onPostCull: function (cameraPass) {
-                    // Collect all rendered mesh instances with the same render target as World has, depthWrite == true and prior to this layer to replicate blitFramebuffer on WebGL2
-                    var visibleObjects = this.instances.visibleOpaque[cameraPass];
-                    var visibleList = visibleObjects.list;
-                    var visibleLength = 0;
-                    var layers = self.scene.layers.layerList;
-                    var subLayerEnabled = self.scene.layers.subLayerEnabled;
-                    var isTransparent = self.scene.layers.subLayerList;
-                    var rt = self.defaultLayerWorld.renderTarget;
-                    var cam = this.cameras[cameraPass];
-                    var layer;
-                    var j;
-                    var layerVisibleList, layerCamId, layerVisibleListLength, drawCall, transparent;
-                    for (var i = 0; i < layers.length; i++) {
-                        layer = layers[i];
-                        if (layer === this) break;
-                        if (layer.renderTarget !== rt || !layer.enabled || !subLayerEnabled[i]) continue;
-                        layerCamId = layer.cameras.indexOf(cam);
-                        if (layerCamId < 0) continue;
-                        transparent = isTransparent[i];
-                        layerVisibleList = transparent ? layer.instances.visibleTransparent[layerCamId] : layer.instances.visibleOpaque[layerCamId];
-                        layerVisibleListLength = layerVisibleList.length;
-                        layerVisibleList = layerVisibleList.list;
-                        for (j = 0; j < layerVisibleListLength; j++) {
-                            drawCall = layerVisibleList[j];
-                            if (drawCall.material && drawCall.material.depthWrite && !drawCall._noDepthDrawGl1) {
-                                visibleList[visibleLength] = drawCall;
-                                visibleLength++;
-                            }
-                        }
-                    }
-                    visibleObjects.length = visibleLength;
-                },
-
-                onPreRenderOpaque: function (cameraPass) { // resize depth map if needed
-                    if (!this.renderTarget || (this.renderTarget.width !== self.graphicsDevice.width || this.renderTarget.height !== self.graphicsDevice.height)) {
-                        this.onDisable();
-                        this.onEnable();
-                    }
-                    this.oldClear = this.cameras[cameraPass].camera._clearOptions;
-                    this.cameras[cameraPass].camera._clearOptions = this.rgbaDepthClearOptions;
-                },
-
-                onDrawCall: function () {
-                    self.graphicsDevice.setColorWrite(true, true, true, true);
-                },
-
-                onPostRenderOpaque: function (cameraPass) {
-                    if (!this.renderTarget) return;
-                    this.cameras[cameraPass].camera._clearOptions = this.oldClear;
-                }
-
-            });
-            this.defaultLayerDepth.rgbaDepthClearOptions = {
-                color: [254.0 / 255, 254.0 / 255, 254.0 / 255, 254.0 / 255],
-                depth: 1.0,
-                flags: pc.CLEARFLAG_COLOR | pc.CLEARFLAG_DEPTH
-            };
-        }
-
-        this.defaultLayerSkybox = new pc.Layer({
-            enabled: false,
-            name: "Skybox",
-            id: pc.LAYERID_SKYBOX,
-            opaqueSortMode: pc.SORTMODE_NONE
-        });
-        this.defaultLayerUi = new pc.Layer({
-            enabled: true,
-            name: "UI",
-            id: pc.LAYERID_UI,
-            transparentSortMode: pc.SORTMODE_MANUAL,
-            passThrough: true
-        });
-        this.defaultLayerImmediate = new pc.Layer({
-            enabled: true,
-            name: "Immediate",
-            id: pc.LAYERID_IMMEDIATE,
-            opaqueSortMode: pc.SORTMODE_NONE,
-            passThrough: true
-        });
-        this.defaultLayerComposition = new pc.LayerComposition();
-
-        this.defaultLayerComposition.pushOpaque(this.defaultLayerWorld);
-        this.defaultLayerComposition.pushOpaque(this.defaultLayerDepth);
-        this.defaultLayerComposition.pushOpaque(this.defaultLayerSkybox);
-        this.defaultLayerComposition.pushTransparent(this.defaultLayerWorld);
-        this.defaultLayerComposition.pushOpaque(this.defaultLayerImmediate);
-        this.defaultLayerComposition.pushTransparent(this.defaultLayerImmediate);
-        this.defaultLayerComposition.pushTransparent(this.defaultLayerUi);
-
-        this.scene.layers = this.defaultLayerComposition;
-
-        this._immediateLayer = this.defaultLayerImmediate;
-
-        // Default layers patch
-        this.scene.on('set:layers', function (oldComp, newComp) {
-            var list = newComp.layerList;
-            var layer;
-            for (var i = 0; i < list.length; i++) {
-                layer = list[i];
-                switch (layer.id) {
-                    case pc.LAYERID_DEPTH:
-                        layer.onEnable = self.defaultLayerDepth.onEnable;
-                        layer.onDisable = self.defaultLayerDepth.onDisable;
-                        layer.onPreRenderOpaque = self.defaultLayerDepth.onPreRenderOpaque;
-                        layer.onPostRenderOpaque = self.defaultLayerDepth.onPostRenderOpaque;
-                        layer.depthClearOptions = self.defaultLayerDepth.depthClearOptions;
-                        layer.rgbaDepthClearOptions = self.defaultLayerDepth.rgbaDepthClearOptions;
-                        layer.shaderPass = self.defaultLayerDepth.shaderPass;
-                        layer.onPostCull = self.defaultLayerDepth.onPostCull;
-                        layer.onDrawCall = self.defaultLayerDepth.onDrawCall;
-                        break;
-                    case pc.LAYERID_UI:
-                        layer.passThrough = self.defaultLayerUi.passThrough;
-                        break;
-                    case pc.LAYERID_IMMEDIATE:
-                        layer.passThrough = self.defaultLayerImmediate.passThrough;
-                        break;
-                }
-            }
-        });
-
-        this.renderer = new pc.ForwardRenderer(this.graphicsDevice);
-        this.renderer.scene = this.scene;
-        this.lightmapper = new pc.Lightmapper(this.graphicsDevice, this.root, this.scene, this.renderer, this.assets);
-        this.once('prerender', this._firstBake, this);
-
-        this.keyboard = options.keyboard || null;
-        this.mouse = options.mouse || null;
-        this.touch = options.touch || null;
-        this.gamepads = options.gamepads || null;
-        this.elementInput = options.elementInput || null;
-        if (this.elementInput)
-            this.elementInput.app = this;
-
-        this.vr = null;
-        // you can enable vr here, or in application properties
-        if (options.vr) {
-            this._onVrChange(options.vr);
-        }
-
-        this._inTools = false;
-
-        this._skyboxLast = 0;
-
-        this._scriptPrefix = options.scriptPrefix || '';
-
-        this.loader.addHandler("animation", new pc.AnimationHandler());
-        this.loader.addHandler("model", new pc.ModelHandler(this.graphicsDevice, this.scene.defaultMaterial));
-        this.loader.addHandler("material", new pc.MaterialHandler(this));
-        this.loader.addHandler("texture", new pc.TextureHandler(this.graphicsDevice, this.assets, this.loader));
-        this.loader.addHandler("text", new pc.TextHandler());
-        this.loader.addHandler("json", new pc.JsonHandler());
-        this.loader.addHandler("audio", new pc.AudioHandler(this._audioManager));
-        this.loader.addHandler("script", new pc.ScriptHandler(this));
-        this.loader.addHandler("scene", new pc.SceneHandler(this));
-        this.loader.addHandler("cubemap", new pc.CubemapHandler(this.graphicsDevice, this.assets, this.loader));
-        this.loader.addHandler("html", new pc.HtmlHandler());
-        this.loader.addHandler("css", new pc.CssHandler());
-        this.loader.addHandler("shader", new pc.ShaderHandler());
-        this.loader.addHandler("hierarchy", new pc.HierarchyHandler(this));
-        this.loader.addHandler("scenesettings", new pc.SceneSettingsHandler(this));
-        this.loader.addHandler("folder", new pc.FolderHandler());
-        this.loader.addHandler("font", new pc.FontHandler(this.loader));
-        this.loader.addHandler("binary", new pc.BinaryHandler());
-        this.loader.addHandler("textureatlas", new pc.TextureAtlasHandler(this.loader));
-        this.loader.addHandler("sprite", new pc.SpriteHandler(this.assets, this.graphicsDevice));
-
-        this.systems = new pc.ComponentSystemRegistry();
-        this.systems.add(new pc.RigidBodyComponentSystem(this));
-        this.systems.add(new pc.CollisionComponentSystem(this));
-        this.systems.add(new pc.AnimationComponentSystem(this));
-        this.systems.add(new pc.ModelComponentSystem(this));
-        this.systems.add(new pc.CameraComponentSystem(this));
-        this.systems.add(new pc.LightComponentSystem(this));
-        if (pc.script.legacy) {
-            this.systems.add(new pc.ScriptLegacyComponentSystem(this));
-        } else {
-            this.systems.add(new pc.ScriptComponentSystem(this));
-        }
-        this.systems.add(new pc.AudioSourceComponentSystem(this, this._audioManager));
-        this.systems.add(new pc.SoundComponentSystem(this, this._audioManager));
-        this.systems.add(new pc.AudioListenerComponentSystem(this, this._audioManager));
-        this.systems.add(new pc.ParticleSystemComponentSystem(this));
-        this.systems.add(new pc.ScreenComponentSystem(this));
-        this.systems.add(new pc.ElementComponentSystem(this));
-        this.systems.add(new pc.ButtonComponentSystem(this));
-        this.systems.add(new pc.ScrollViewComponentSystem(this));
-        this.systems.add(new pc.ScrollbarComponentSystem(this));
-        this.systems.add(new pc.SpriteComponentSystem(this));
-        this.systems.add(new pc.LayoutGroupComponentSystem(this));
-        this.systems.add(new pc.LayoutChildComponentSystem(this));
-        this.systems.add(new pc.ZoneComponentSystem(this));
-
-        this._visibilityChangeHandler = this.onVisibilityChange.bind(this);
-
-        // Depending on browser add the correct visibiltychange event and store the name of the hidden attribute
-        // in this._hiddenAttr.
-        if (document.hidden !== undefined) {
-            this._hiddenAttr = 'hidden';
-            document.addEventListener('visibilitychange', this._visibilityChangeHandler, false);
-        } else if (document.mozHidden !== undefined) {
-            this._hiddenAttr = 'mozHidden';
-            document.addEventListener('mozvisibilitychange', this._visibilityChangeHandler, false);
-        } else if (document.msHidden !== undefined) {
-            this._hiddenAttr = 'msHidden';
-            document.addEventListener('msvisibilitychange', this._visibilityChangeHandler, false);
-        } else if (document.webkitHidden !== undefined) {
-            this._hiddenAttr = 'webkitHidden';
-            document.addEventListener('webkitvisibilitychange', this._visibilityChangeHandler, false);
-        }
-
-        // bind tick function to current scope
-
-        /* eslint-disable-next-line no-use-before-define */
-        this.tick = makeTick(this); // Circular linting issue as makeTick and Application reference each other
-    };
-
-    Application._currentApplication = null;
-    Application._applications = {};
-    Application.getApplication = function (id) {
-        return id ? Application._applications[id] : Application._currentApplication;
-    };
-
 
     // Mini-object used to measure progress of loading sets
     var Progress = function (length) {
@@ -531,9 +133,411 @@ Object.assign(pc, function () {
         this.done = function () {
             return (this.count === this.length);
         };
-    };
+    };     
 
-    Object.assign(Application.prototype, {
+    /**
+     * @name pc.Application#renderNextFrame
+     * @type Boolean
+     * @description If {@link pc.Application#autoRender} is false, set `app.renderNextFrame` true to force application to render the scene once next frame.
+     * @example
+     * // render the scene only while space key is pressed
+     * if (this.app.keyboard.isPressed(pc.KEY_SPACE)) {
+     *    this.app.renderNextFrame = true;
+     * }
+     */
+
+    export class Application {
+        static _applications: Application[];
+        static _currentApplication: Application;
+        _time: number;
+        timeScale: number;
+        maxDeltaTime: number;
+        frame: number;
+        autoRender: boolean;
+        renderNextFrame: boolean;
+
+
+        constructor(canvas, options) {
+            options = options || {};
+
+            // Open the log
+            pc.log.open();
+            // Add event support
+            pc.events.attach(this);
+
+            // Store application instance
+            Application._applications[canvas.id] = this;
+            Application._currentApplication = this;
+
+            this._time = 0;
+            this.timeScale = 1;
+            this.maxDeltaTime = 0.1; // Maximum delta is 0.1s or 10 fps.
+
+            this.frame = 0; // the total number of frames the application has updated since start() was called
+
+            this.autoRender = true;
+            this.renderNextFrame = false;
+
+            // enable if you want entity type script attributes
+            // to not be re-mapped when an entity is cloned
+            this.useLegacyScriptAttributeCloning = pc.script.legacy;
+
+            this._librariesLoaded = false;
+            this._fillMode = pc.FILLMODE_KEEP_ASPECT;
+            this._resolutionMode = pc.RESOLUTION_FIXED;
+            this._allowResize = true;
+
+            // for compatibility
+            this.context = this;
+
+            this.graphicsDevice = new pc.GraphicsDevice(canvas, options.graphicsDeviceOptions);
+            this.stats = new pc.ApplicationStats(this.graphicsDevice);
+            this._audioManager = new pc.SoundManager(options);
+            this.loader = new pc.ResourceLoader();
+
+            // stores all entities that have been created
+            // for this app by guid
+            this._entityIndex = {};
+
+            this.scene = new pc.Scene();
+            this.syncQueue = new pc.SyncQueue();
+            this.root = new pc.Entity(this);
+            this.root._enabledInHierarchy = true;
+            this._enableList = [];
+            this._enableList.size = 0;
+            this.assets = new pc.AssetRegistry(this.loader);
+            if (options.assetPrefix) this.assets.prefix = options.assetPrefix;
+            this.scriptsOrder = options.scriptsOrder || [];
+            this.scripts = new pc.ScriptRegistry(this);
+
+            this._sceneRegistry = new pc.SceneRegistry(this);
+
+            var self = this;
+            this.defaultLayerWorld = new pc.Layer({
+                name: "World",
+                id: pc.LAYERID_WORLD
+            });
+
+            if (this.graphicsDevice.webgl2) {
+                // WebGL 2 depth layer just copies existing depth
+                this.defaultLayerDepth = new pc.Layer({
+                    enabled: false,
+                    name: "Depth",
+                    id: pc.LAYERID_DEPTH,
+
+                    onEnable: function () {
+                        if (this.renderTarget) return;
+                        var depthBuffer = new pc.Texture(self.graphicsDevice, {
+                            format: pc.PIXELFORMAT_DEPTHSTENCIL,
+                            width: self.graphicsDevice.width,
+                            height: self.graphicsDevice.height
+                        });
+                        depthBuffer.minFilter = pc.FILTER_NEAREST;
+                        depthBuffer.magFilter = pc.FILTER_NEAREST;
+                        depthBuffer.addressU = pc.ADDRESS_CLAMP_TO_EDGE;
+                        depthBuffer.addressV = pc.ADDRESS_CLAMP_TO_EDGE;
+                        this.renderTarget = new pc.RenderTarget({
+                            colorBuffer: null,
+                            depthBuffer: depthBuffer,
+                            autoResolve: false
+                        });
+                        self.graphicsDevice.scope.resolve("uDepthMap").setValue(depthBuffer);
+                    },
+
+                    onDisable: function () {
+                        if (!this.renderTarget) return;
+                        this.renderTarget._depthBuffer.destroy();
+                        this.renderTarget.destroy();
+                        this.renderTarget = null;
+                    },
+
+                    onPreRenderOpaque: function (cameraPass) { // resize depth map if needed
+                        var gl = self.graphicsDevice.gl;
+                        this.srcFbo = gl.getParameter(gl.FRAMEBUFFER_BINDING);
+
+                        if (!this.renderTarget || (this.renderTarget.width !== self.graphicsDevice.width || this.renderTarget.height !== self.graphicsDevice.height)) {
+                            this.onDisable();
+                            this.onEnable();
+                        }
+
+                        // disable clearing
+                        this.oldClear = this.cameras[cameraPass].camera._clearOptions;
+                        this.cameras[cameraPass].camera._clearOptions = this.depthClearOptions;
+                    },
+
+                    onPostRenderOpaque: function (cameraPass) { // copy depth
+                        if (!this.renderTarget) return;
+
+                        this.cameras[cameraPass].camera._clearOptions = this.oldClear;
+
+                        var gl = self.graphicsDevice.gl;
+
+                        self.graphicsDevice.setRenderTarget(this.renderTarget);
+                        self.graphicsDevice.updateBegin();
+
+                        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, this.srcFbo);
+                        gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, this.renderTarget._glFrameBuffer);
+                        gl.blitFramebuffer( 0, 0, this.renderTarget.width, this.renderTarget.height,
+                                            0, 0, this.renderTarget.width, this.renderTarget.height,
+                                            gl.DEPTH_BUFFER_BIT,
+                                            gl.NEAREST);
+                    }
+
+                });
+                this.defaultLayerDepth.depthClearOptions = {
+                    flags: 0
+                };
+            } else {
+                // WebGL 1 depth layer just renders same objects as in World, but with RGBA-encoded depth shader
+                this.defaultLayerDepth = new pc.Layer({
+                    enabled: false,
+                    name: "Depth",
+                    id: pc.LAYERID_DEPTH,
+                    shaderPass: pc.SHADER_DEPTH,
+
+                    onEnable: function () {
+                        if (this.renderTarget) return;
+                        var colorBuffer = new pc.Texture(self.graphicsDevice, {
+                            format: pc.PIXELFORMAT_R8_G8_B8_A8,
+                            width: self.graphicsDevice.width,
+                            height: self.graphicsDevice.height
+                        });
+                        colorBuffer.minFilter = pc.FILTER_NEAREST;
+                        colorBuffer.magFilter = pc.FILTER_NEAREST;
+                        colorBuffer.addressU = pc.ADDRESS_CLAMP_TO_EDGE;
+                        colorBuffer.addressV = pc.ADDRESS_CLAMP_TO_EDGE;
+                        this.renderTarget = new pc.RenderTarget(self.graphicsDevice, colorBuffer, {
+                            depth: true,
+                            stencil: self.graphicsDevice.supportsStencil
+                        });
+                        self.graphicsDevice.scope.resolve("uDepthMap").setValue(colorBuffer);
+                    },
+
+                    onDisable: function () {
+                        if (!this.renderTarget) return;
+                        this.renderTarget._colorBuffer.destroy();
+                        this.renderTarget.destroy();
+                        this.renderTarget = null;
+                    },
+
+                    onPostCull: function (cameraPass) {
+                        // Collect all rendered mesh instances with the same render target as World has, depthWrite == true and prior to this layer to replicate blitFramebuffer on WebGL2
+                        var visibleObjects = this.instances.visibleOpaque[cameraPass];
+                        var visibleList = visibleObjects.list;
+                        var visibleLength = 0;
+                        var layers = self.scene.layers.layerList;
+                        var subLayerEnabled = self.scene.layers.subLayerEnabled;
+                        var isTransparent = self.scene.layers.subLayerList;
+                        var rt = self.defaultLayerWorld.renderTarget;
+                        var cam = this.cameras[cameraPass];
+                        var layer;
+                        var j;
+                        var layerVisibleList, layerCamId, layerVisibleListLength, drawCall, transparent;
+                        for (var i = 0; i < layers.length; i++) {
+                            layer = layers[i];
+                            if (layer === this) break;
+                            if (layer.renderTarget !== rt || !layer.enabled || !subLayerEnabled[i]) continue;
+                            layerCamId = layer.cameras.indexOf(cam);
+                            if (layerCamId < 0) continue;
+                            transparent = isTransparent[i];
+                            layerVisibleList = transparent ? layer.instances.visibleTransparent[layerCamId] : layer.instances.visibleOpaque[layerCamId];
+                            layerVisibleListLength = layerVisibleList.length;
+                            layerVisibleList = layerVisibleList.list;
+                            for (j = 0; j < layerVisibleListLength; j++) {
+                                drawCall = layerVisibleList[j];
+                                if (drawCall.material && drawCall.material.depthWrite && !drawCall._noDepthDrawGl1) {
+                                    visibleList[visibleLength] = drawCall;
+                                    visibleLength++;
+                                }
+                            }
+                        }
+                        visibleObjects.length = visibleLength;
+                    },
+
+                    onPreRenderOpaque: function (cameraPass) { // resize depth map if needed
+                        if (!this.renderTarget || (this.renderTarget.width !== self.graphicsDevice.width || this.renderTarget.height !== self.graphicsDevice.height)) {
+                            this.onDisable();
+                            this.onEnable();
+                        }
+                        this.oldClear = this.cameras[cameraPass].camera._clearOptions;
+                        this.cameras[cameraPass].camera._clearOptions = this.rgbaDepthClearOptions;
+                    },
+
+                    onDrawCall: function () {
+                        self.graphicsDevice.setColorWrite(true, true, true, true);
+                    },
+
+                    onPostRenderOpaque: function (cameraPass) {
+                        if (!this.renderTarget) return;
+                        this.cameras[cameraPass].camera._clearOptions = this.oldClear;
+                    }
+
+                });
+                this.defaultLayerDepth.rgbaDepthClearOptions = {
+                    color: [254.0 / 255, 254.0 / 255, 254.0 / 255, 254.0 / 255],
+                    depth: 1.0,
+                    flags: pc.CLEARFLAG_COLOR | pc.CLEARFLAG_DEPTH
+                };
+            }
+
+            this.defaultLayerSkybox = new pc.Layer({
+                enabled: false,
+                name: "Skybox",
+                id: pc.LAYERID_SKYBOX,
+                opaqueSortMode: pc.SORTMODE_NONE
+            });
+            this.defaultLayerUi = new pc.Layer({
+                enabled: true,
+                name: "UI",
+                id: pc.LAYERID_UI,
+                transparentSortMode: pc.SORTMODE_MANUAL,
+                passThrough: true
+            });
+            this.defaultLayerImmediate = new pc.Layer({
+                enabled: true,
+                name: "Immediate",
+                id: pc.LAYERID_IMMEDIATE,
+                opaqueSortMode: pc.SORTMODE_NONE,
+                passThrough: true
+            });
+            this.defaultLayerComposition = new pc.LayerComposition();
+
+            this.defaultLayerComposition.pushOpaque(this.defaultLayerWorld);
+            this.defaultLayerComposition.pushOpaque(this.defaultLayerDepth);
+            this.defaultLayerComposition.pushOpaque(this.defaultLayerSkybox);
+            this.defaultLayerComposition.pushTransparent(this.defaultLayerWorld);
+            this.defaultLayerComposition.pushOpaque(this.defaultLayerImmediate);
+            this.defaultLayerComposition.pushTransparent(this.defaultLayerImmediate);
+            this.defaultLayerComposition.pushTransparent(this.defaultLayerUi);
+
+            this.scene.layers = this.defaultLayerComposition;
+
+            this._immediateLayer = this.defaultLayerImmediate;
+
+            // Default layers patch
+            this.scene.on('set:layers', function (oldComp, newComp) {
+                var list = newComp.layerList;
+                var layer;
+                for (var i = 0; i < list.length; i++) {
+                    layer = list[i];
+                    switch (layer.id) {
+                        case pc.LAYERID_DEPTH:
+                            layer.onEnable = self.defaultLayerDepth.onEnable;
+                            layer.onDisable = self.defaultLayerDepth.onDisable;
+                            layer.onPreRenderOpaque = self.defaultLayerDepth.onPreRenderOpaque;
+                            layer.onPostRenderOpaque = self.defaultLayerDepth.onPostRenderOpaque;
+                            layer.depthClearOptions = self.defaultLayerDepth.depthClearOptions;
+                            layer.rgbaDepthClearOptions = self.defaultLayerDepth.rgbaDepthClearOptions;
+                            layer.shaderPass = self.defaultLayerDepth.shaderPass;
+                            layer.onPostCull = self.defaultLayerDepth.onPostCull;
+                            layer.onDrawCall = self.defaultLayerDepth.onDrawCall;
+                            break;
+                        case pc.LAYERID_UI:
+                            layer.passThrough = self.defaultLayerUi.passThrough;
+                            break;
+                        case pc.LAYERID_IMMEDIATE:
+                            layer.passThrough = self.defaultLayerImmediate.passThrough;
+                            break;
+                    }
+                }
+            });
+
+            this.renderer = new pc.ForwardRenderer(this.graphicsDevice);
+            this.renderer.scene = this.scene;
+            this.lightmapper = new pc.Lightmapper(this.graphicsDevice, this.root, this.scene, this.renderer, this.assets);
+            this.once('prerender', this._firstBake, this);
+
+            this.keyboard = options.keyboard || null;
+            this.mouse = options.mouse || null;
+            this.touch = options.touch || null;
+            this.gamepads = options.gamepads || null;
+            this.elementInput = options.elementInput || null;
+            if (this.elementInput)
+                this.elementInput.app = this;
+
+            this.vr = null;
+            // you can enable vr here, or in application properties
+            if (options.vr) {
+                this._onVrChange(options.vr);
+            }
+
+            this._inTools = false;
+
+            this._skyboxLast = 0;
+
+            this._scriptPrefix = options.scriptPrefix || '';
+
+            this.loader.addHandler("animation", new pc.AnimationHandler());
+            this.loader.addHandler("model", new pc.ModelHandler(this.graphicsDevice, this.scene.defaultMaterial));
+            this.loader.addHandler("material", new pc.MaterialHandler(this));
+            this.loader.addHandler("texture", new pc.TextureHandler(this.graphicsDevice, this.assets, this.loader));
+            this.loader.addHandler("text", new pc.TextHandler());
+            this.loader.addHandler("json", new pc.JsonHandler());
+            this.loader.addHandler("audio", new pc.AudioHandler(this._audioManager));
+            this.loader.addHandler("script", new pc.ScriptHandler(this));
+            this.loader.addHandler("scene", new pc.SceneHandler(this));
+            this.loader.addHandler("cubemap", new pc.CubemapHandler(this.graphicsDevice, this.assets, this.loader));
+            this.loader.addHandler("html", new pc.HtmlHandler());
+            this.loader.addHandler("css", new pc.CssHandler());
+            this.loader.addHandler("shader", new pc.ShaderHandler());
+            this.loader.addHandler("hierarchy", new pc.HierarchyHandler(this));
+            this.loader.addHandler("scenesettings", new pc.SceneSettingsHandler(this));
+            this.loader.addHandler("folder", new pc.FolderHandler());
+            this.loader.addHandler("font", new pc.FontHandler(this.loader));
+            this.loader.addHandler("binary", new pc.BinaryHandler());
+            this.loader.addHandler("textureatlas", new pc.TextureAtlasHandler(this.loader));
+            this.loader.addHandler("sprite", new pc.SpriteHandler(this.assets, this.graphicsDevice));
+
+            this.systems = new pc.ComponentSystemRegistry();
+            this.systems.add(new pc.RigidBodyComponentSystem(this));
+            this.systems.add(new pc.CollisionComponentSystem(this));
+            this.systems.add(new pc.AnimationComponentSystem(this));
+            this.systems.add(new pc.ModelComponentSystem(this));
+            this.systems.add(new pc.CameraComponentSystem(this));
+            this.systems.add(new pc.LightComponentSystem(this));
+            if (pc.script.legacy) {
+                this.systems.add(new pc.ScriptLegacyComponentSystem(this));
+            } else {
+                this.systems.add(new pc.ScriptComponentSystem(this));
+            }
+            this.systems.add(new pc.AudioSourceComponentSystem(this, this._audioManager));
+            this.systems.add(new pc.SoundComponentSystem(this, this._audioManager));
+            this.systems.add(new pc.AudioListenerComponentSystem(this, this._audioManager));
+            this.systems.add(new pc.ParticleSystemComponentSystem(this));
+            this.systems.add(new pc.ScreenComponentSystem(this));
+            this.systems.add(new pc.ElementComponentSystem(this));
+            this.systems.add(new pc.ButtonComponentSystem(this));
+            this.systems.add(new pc.ScrollViewComponentSystem(this));
+            this.systems.add(new pc.ScrollbarComponentSystem(this));
+            this.systems.add(new pc.SpriteComponentSystem(this));
+            this.systems.add(new pc.LayoutGroupComponentSystem(this));
+            this.systems.add(new pc.LayoutChildComponentSystem(this));
+            this.systems.add(new pc.ZoneComponentSystem(this));
+
+            this._visibilityChangeHandler = this.onVisibilityChange.bind(this);
+
+            // Depending on browser add the correct visibiltychange event and store the name of the hidden attribute
+            // in this._hiddenAttr.
+            if (document.hidden !== undefined) {
+                this._hiddenAttr = 'hidden';
+                document.addEventListener('visibilitychange', this._visibilityChangeHandler, false);
+            } else if (document.mozHidden !== undefined) {
+                this._hiddenAttr = 'mozHidden';
+                document.addEventListener('mozvisibilitychange', this._visibilityChangeHandler, false);
+            } else if (document.msHidden !== undefined) {
+                this._hiddenAttr = 'msHidden';
+                document.addEventListener('msvisibilitychange', this._visibilityChangeHandler, false);
+            } else if (document.webkitHidden !== undefined) {
+                this._hiddenAttr = 'webkitHidden';
+                document.addEventListener('webkitvisibilitychange', this._visibilityChangeHandler, false);
+            }
+
+            // bind tick function to current scope
+
+            /* eslint-disable-next-line no-use-before-define */
+            this.tick = makeTick(this); // Circular linting issue as makeTick and Application reference each other
+        }
+
         /**
          * @function
          * @name pc.Application#configure
@@ -541,7 +545,7 @@ Object.assign(pc, function () {
          * @param {String} url The URL of the configuration file to load
          * @param {Function} callback The Function called when the configuration file is loaded and parsed
          */
-        configure: function (url, callback) {
+        configure(url: string, callback: Function) {
             var self = this;
             pc.http.get(url, function (err, response) {
                 if (err) {
@@ -564,7 +568,7 @@ Object.assign(pc, function () {
                     }
                 });
             });
-        },
+        }
 
         /**
          * @function
@@ -572,7 +576,7 @@ Object.assign(pc, function () {
          * @description Load all assets in the asset registry that are marked as 'preload'
          * @param {Function} callback Function called when all assets are loaded
          */
-        preload: function (callback) {
+        preload(callback) {
             var self = this;
 
             self.fire("preload:start");
@@ -642,7 +646,7 @@ Object.assign(pc, function () {
             } else {
                 done();
             }
-        },
+        }
 
         /**
          * @function
@@ -651,14 +655,14 @@ Object.assign(pc, function () {
          * @param {String} name The name of the scene file given in the Editor
          * @returns {String} The URL of the scene file
          */
-        getSceneUrl: function (name) {
+        getSceneUrl(name) {
             var entry = this._sceneRegistry.find(name);
             if (entry) {
                 return entry.url;
             }
             return null;
 
-        },
+        }
 
         /**
          * @function
@@ -678,9 +682,9 @@ Object.assign(pc, function () {
          *   }
          * });
          */
-        loadSceneHierarchy: function (url, callback) {
+        loadSceneHierarchy(url, callback) {
             this._sceneRegistry.loadSceneHierarchy(url, callback);
-        },
+        }
 
         /**
          * @function
@@ -698,15 +702,15 @@ Object.assign(pc, function () {
          *   }
          * });
          */
-        loadSceneSettings: function (url, callback) {
+        loadSceneSettings(url, callback) {
             this._sceneRegistry.loadSceneSettings(url, callback);
-        },
+        }
 
-        loadScene: function (url, callback) {
+        loadScene(url, callback) {
             this._sceneRegistry.loadScene(url, callback);
-        },
+        }
 
-        _preloadScripts: function (sceneData, callback) {
+        _preloadScripts(sceneData, callback) {
             if (!pc.script.legacy) {
                 callback();
                 return;
@@ -747,10 +751,10 @@ Object.assign(pc, function () {
                 self.systems.script.preloading = false;
                 callback();
             }
-        },
+        }
 
         // set application properties from data file
-        _parseApplicationProperties: function (props, callback) {
+        _parseApplicationProperties(props, callback) {
             var i;
             var len;
 
@@ -813,9 +817,9 @@ Object.assign(pc, function () {
             }
 
             this._loadLibraries(props.libraries, callback);
-        },
+        }
 
-        _loadLibraries: function (urls, callback) {
+        _loadLibraries(urls, callback) {
             var len = urls.length;
             var count = len;
             var self = this;
@@ -844,19 +848,19 @@ Object.assign(pc, function () {
             } else {
                 callback(null);
             }
-        },
+        }
 
         // insert scene name/urls into the registry
-        _parseScenes: function (scenes) {
+        _parseScenes(scenes) {
             if (!scenes) return;
 
             for (var i = 0; i < scenes.length; i++) {
                 this._sceneRegistry.add(scenes[i].name, scenes[i].url);
             }
-        },
+        }
 
         // insert assets into registry
-        _parseAssets: function (assets) {
+        _parseAssets(assets) {
             var i, id;
             var list = [];
 
@@ -895,9 +899,9 @@ Object.assign(pc, function () {
                 // registry
                 this.assets.add(asset);
             }
-        },
+        }
 
-        _getScriptReferences: function (scene) {
+        _getScriptReferences(scene) {
             var i, key;
 
             var priorityScripts = [];
@@ -931,14 +935,14 @@ Object.assign(pc, function () {
             }
 
             return _scripts;
-        },
+        }
 
         /**
          * @function
          * @name pc.Application#start
          * @description Start the Application updating
          */
-        start: function () {
+        start() {
             this.frame = 0;
 
             this.fire("start", {
@@ -957,7 +961,7 @@ Object.assign(pc, function () {
             this.fire("postinitialize");
 
             this.tick();
-        },
+        }
 
         /**
          * @function
@@ -965,7 +969,7 @@ Object.assign(pc, function () {
          * @description Application specific update method. Override this if you have a custom Application
          * @param {Number} dt The time delta since the last frame.
          */
-        update: function (dt) {
+        update(dt) {
             this.frame++;
 
             this.graphicsDevice.updateClientRect();
@@ -1002,14 +1006,14 @@ Object.assign(pc, function () {
             // #ifdef PROFILER
             this.stats.frame.updateTime = pc.now() - this.stats.frame.updateStart;
             // #endif
-        },
+        }
 
         /**
          * @function
          * @name pc.Application#render
          * @description Application specific render method. Override this if you have a custom Application
          */
-        render: function () {
+        render() {
             // #ifdef PROFILER
             this.stats.frame.renderStart = pc.now();
             // #endif
@@ -1023,9 +1027,9 @@ Object.assign(pc, function () {
             // #ifdef PROFILER
             this.stats.frame.renderTime = pc.now() - this.stats.frame.renderStart;
             // #endif
-        },
+        }
 
-        _fillFrameStats: function (now, dt, ms) {
+        _fillFrameStats(now, dt, ms) {
             // Timing stats
             var stats = this.stats.frame;
             stats.dt = dt;
@@ -1104,7 +1108,7 @@ Object.assign(pc, function () {
             stats.frameTime = stats._frameTime;
             stats._updatesPerFrame = 0;
             stats._frameTime = 0;
-        },
+        }
 
         /**
          * @function
@@ -1119,10 +1123,10 @@ Object.assign(pc, function () {
          * @param {Number} [width] The width of the canvas (only used when mode is pc.FILLMODE_NONE).
          * @param {Number} [height] The height of the canvas (only used when mode is pc.FILLMODE_NONE).
          */
-        setCanvasFillMode: function (mode, width, height) {
+        setCanvasFillMode(mode, width, height) {
             this._fillMode = mode;
             this.resizeCanvas(width, height);
-        },
+        }
 
         /**
          * @function
@@ -1136,7 +1140,7 @@ Object.assign(pc, function () {
          * @param {Number} [width] The horizontal resolution, optional in AUTO mode, if not provided canvas clientWidth is used
          * @param {Number} [height] The vertical resolution, optional in AUTO mode, if not provided canvas clientHeight is used
          */
-        setCanvasResolution: function (mode, width, height) {
+        setCanvasResolution(mode, width, height) {
             this._resolutionMode = mode;
 
             // In AUTO mode the resolution is the same as the canvas size, unless specified
@@ -1146,7 +1150,7 @@ Object.assign(pc, function () {
             }
 
             this.graphicsDevice.resizeCanvas(width, height);
-        },
+        }
 
         /**
          * @function
@@ -1154,9 +1158,9 @@ Object.assign(pc, function () {
          * @description Returns true if the application is currently running fullscreen
          * @returns {Boolean} True if the application is running fullscreen
          */
-        isFullscreen: function () {
+        isFullscreen() {
             return !!document.fullscreenElement;
-        },
+        }
 
         /**
          * @function
@@ -1176,7 +1180,7 @@ Object.assign(pc, function () {
          *     });
          * }, false);
          */
-        enableFullscreen: function (element, success, error) {
+        enableFullscreen(element, success, error) {
             element = element || this.graphicsDevice.canvas;
 
             // success callback
@@ -1205,7 +1209,7 @@ Object.assign(pc, function () {
                 error();
             }
 
-        },
+        }
 
         /**
          * @function
@@ -1213,7 +1217,7 @@ Object.assign(pc, function () {
          * @description If application is currently displaying an element as fullscreen, then stop and return to normal.
          * @param {Function} [success] Function called when transition to normal mode is finished
          */
-        disableFullscreen: function (success) {
+        disableFullscreen(success) {
             // success callback
             var s = function () {
                 success();
@@ -1225,7 +1229,7 @@ Object.assign(pc, function () {
             }
 
             document.exitFullscreen();
-        },
+        }
 
         /**
          * @function
@@ -1233,9 +1237,9 @@ Object.assign(pc, function () {
          * @description Queries the visibility of the window or tab in which the application is running.
          * @returns {Boolean} True if the application is not visible and false otherwise.
          */
-        isHidden: function () {
+        isHidden() {
             return document[this._hiddenAttr];
-        },
+        }
 
         /**
          * @private
@@ -1243,13 +1247,13 @@ Object.assign(pc, function () {
          * @name pc.Application#onVisibilityChange
          * @description Called when the visibility state of the current tab/window changes
          */
-        onVisibilityChange: function () {
+        onVisibilityChange() {
             if (this.isHidden()) {
                 this._audioManager.suspend();
             } else {
                 this._audioManager.resume();
             }
-        },
+        }
 
         /**
          * @function
@@ -1262,7 +1266,7 @@ Object.assign(pc, function () {
          * @param {Number} [height] The height of the canvas, only used in NONE mode
          * @returns {Object} A object containing the values calculated to use as width and height
          */
-        resizeCanvas: function (width, height) {
+        resizeCanvas(width, height) {
             if (!this._allowResize) return; // prevent resizing (e.g. if presenting in VR HMD)
 
             var windowWidth = window.innerWidth;
@@ -1306,7 +1310,7 @@ Object.assign(pc, function () {
                 width: width,
                 height: height
             };
-        },
+        }
 
         /**
          * @private
@@ -1315,13 +1319,13 @@ Object.assign(pc, function () {
          * Code libraries are passed into the constructor of the Application and the application won't start running or load packs until all libraries have
          * been loaded
          */
-        onLibrariesLoaded: function () {
+        onLibrariesLoaded() {
             this._librariesLoaded = true;
             this.systems.rigidbody.onLibraryLoaded();
             this.systems.collision.onLibraryLoaded();
-        },
+        }
 
-        applySceneSettings: function (settings) {
+        applySceneSettings(settings) {
             var asset;
 
             if (this.systems.rigidbody && typeof Ammo !== 'undefined') {
@@ -1344,7 +1348,7 @@ Object.assign(pc, function () {
                     this.setSkybox(null);
                 }
             }
-        },
+        }
 
         /**
          * @function
@@ -1352,7 +1356,7 @@ Object.assign(pc, function () {
          * @description Sets the skybox asset to current scene, and subscribes to asset load/change events
          * @param {pc.Asset} asset Asset of type `skybox` to be set to, or null to remove skybox
          */
-        setSkybox: function (asset) {
+        setSkybox(asset) {
             if (asset) {
                 if (this._skyboxLast === asset.id) {
                     if (this.scene.skyboxMip === 0 && !asset.loadFaces) {
@@ -1386,9 +1390,9 @@ Object.assign(pc, function () {
                     id: this._skyboxLast
                 });
             }
-        },
+        }
 
-        _onVrChange: function (enabled) {
+        _onVrChange(enabled) {
             if (enabled) {
                 if (!this.vr) {
                     this.vr = new pc.VrManager(this);
@@ -1399,22 +1403,22 @@ Object.assign(pc, function () {
                     this.vr = null;
                 }
             }
-        },
+        }
 
-        _onSkyboxChange: function (asset) {
+        _onSkyboxChange(asset) {
             this.scene.setSkybox(asset.resources);
-        },
+        }
 
-        _skyboxLoad: function (asset) {
+        _skyboxLoad(asset) {
             if (this.scene.skyboxMip === 0)
                 asset.loadFaces = true;
 
             this.assets.load(asset);
 
             this._onSkyboxChange(asset);
-        },
+        }
 
-        _skyboxRemove: function (asset) {
+        _skyboxRemove(asset) {
             if (!this._skyboxLast)
                 return;
 
@@ -1423,21 +1427,21 @@ Object.assign(pc, function () {
             this.assets.off('remove:' + asset.id, this._skyboxRemove, this);
             this.scene.setSkybox(null);
             this._skyboxLast = null;
-        },
+        }
 
-        _firstBake: function () {
+        _firstBake() {
             this.lightmapper.bake(null, this.scene.lightmapMode);
-        },
+        }
 
-        _firstBatch: function () {
-        },
+        _firstBatch() {
+        }
 
         /**
          * @function
          * @name pc.Application#destroy
          * @description Destroys application and removes all event listeners.
          */
-        destroy: function () {
+        destroy() {
             var i, l;
             var canvasId = this.graphicsDevice.canvas.id;
 
@@ -1555,7 +1559,13 @@ Object.assign(pc, function () {
                 Application._currentApplication = null;
             }
         }
-    });
+    }
+
+    Application._currentApplication = null;
+    Application._applications = {};
+    Application.getApplication = function (id) {
+        return id ? Application._applications[id] : Application._currentApplication;
+    };
 
     // static data
     var _frameEndData = {};
@@ -1616,38 +1626,37 @@ Object.assign(pc, function () {
         };
     };
 
-    return {
+    //return {
         /**
          * @enum pc.FILLMODE
          * @name pc.FILLMODE_NONE
          * @description When resizing the window the size of the canvas will not change.
          */
-        FILLMODE_NONE: 'NONE',
+        export var FILLMODE_NONE = 'NONE';
         /**
          * @enum pc.FILLMODE
          * @name pc.FILLMODE_FILL_WINDOW
          * @description When resizing the window the size of the canvas will change to fill the window exactly.
          */
-        FILLMODE_FILL_WINDOW: 'FILL_WINDOW',
+        export var FILLMODE_FILL_WINDOW = 'FILL_WINDOW';
         /**
          * @enum pc.FILLMODE
          * @name pc.FILLMODE_KEEP_ASPECT
          * @description When resizing the window the size of the canvas will change to fill the window as best it can, while maintaining the same aspect ratio.
          */
-        FILLMODE_KEEP_ASPECT: 'KEEP_ASPECT',
+        export var FILLMODE_KEEP_ASPECT = 'KEEP_ASPECT';
         /**
          * @enum pc.RESOLUTION
          * @name pc.RESOLUTION_AUTO
          * @description When the canvas is resized the resolution of the canvas will change to match the size of the canvas.
          */
-        RESOLUTION_AUTO: 'AUTO',
+        export var RESOLUTION_AUTO = 'AUTO';
         /**
          * @enum pc.RESOLUTION
          * @name pc.RESOLUTION_FIXED
          * @description When the canvas is resized the resolution of the canvas will remain at the same value and the output will just be scaled to fit the canvas.
          */
-        RESOLUTION_FIXED: 'FIXED',
+        export var RESOLUTION_FIXED = 'FIXED';
 
-        Application: Application
-    };
-}());
+    //};
+}
